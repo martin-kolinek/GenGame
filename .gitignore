@@ -1,0 +1,17 @@
+#eclipse stuff
+/.classpath
+/.project
+/.cache
+/.settings
+/*.log
+
+#sbt stuff
+target/
+
+#jme creates lwjgl sos
+/*.so
+/*.dll
+
+#temp files
+*~
+/bin
