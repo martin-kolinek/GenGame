@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nifty xmlns="http://nifty-gui.sourceforge.net/nifty-1.3.xsd"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="../nifty-1.3.xsd ../nifty-1.3.xsd">
+	<useStyles filename="nifty-default-styles.xml" />
+  	<useControls filename="nifty-default-controls.xml" />
+	<screen id="start" controller="org.kolinek.gengame.game.menu.MainMenuComponent$MainMenu">
+		<layer id="background" backgroundColor="#f00f" childLayout="center" width="100%" height="100%">
+			<image filename="gui/menu/background.jpg" width="100%" height="100%" />
+		</layer>
+		<layer id="foreground" childLayout="center">
+			<panel width="40%" height="60%" childLayout="vertical" backgroundColor="#9997" align="center" valign="center" >
+				<panel height="10%" />
+				<panel height="10%" childLayout="center">
+					<text text="Gen Game" font="Interface/Fonts/Default.fnt" width="100%" height="100%" />
+				</panel>
+				<panel height="10%" />
+				<panel height="70%" childLayout="vertical">
+					<panel height="10%" />
+					<control name="button" label="Start" id="StartButton" align="center" valign="center" width="80%" height="20%" >
+						<interact onClick="startGame()" />
+					</control>
+					<panel height="10%" />
+	          		<control name="button" label="Options" id="OptionsButton" align="center" valign="center" width="80%" height="20%" />
+	          		<panel height="10%" />
+					<control name="button" label="Quit" id="QuitButton" align="center" valign="center" width="80%" height="20%" >
+						<interact onClick="quitGame()" />
+					</control>
+					<panel height="10%" />
+				</panel>
+			</panel>
+		</layer>
+	</screen>
+	<screen id="start_game" controller="org.kolinek.gengame.game.menu.StartMenuComponent$StartMenu">
+		<layer id="background" backgroundColor="#f00f" childLayout="center" width="100%" height="100%">
+			<image filename="gui/menu/background.jpg" width="100%" height="100%" />
+		</layer>
+		<layer id="foreground" childLayout="center">
+			<panel width="60%" height="60%" childLayout="vertical" backgroundColor="#9997" align="center" valign="center">
+				<panel width="100%" height="20%" childLayout="center">
+					<text text="Game properties" font="Interface/Fonts/Default.fnt" width="100%" height="100%" />			
+				</panel>
+				<panel width="100%" height="10%" />
+				<panel width="80%" height="10%" childLayout="horizontal" align="center" >
+					<text id="DBLabel" text="Database file" font="Interface/Fonts/Default.fnt" height="100%" width="50%" />
+					<text id="DBNameLabel" text="terrain.db" font="Interface/Fonts/Default.fnt" height="100%" width="50%" />
+				</panel>
+				<panel width="100%" height="40%" />
+				<panel width="80%" height="10%" childLayout="horizontal" align="center" >
+					<control name="button" id="OKButton" label="OK" width="40%" height="100%" >
+						<interact onClick="startGame()" />	
+					</control>
+					<panel width="20%" height="100%" />
+					<control name="button" id="BackButton" label="Back" width="40%" height="100%" >
+						<interact onClick="back()" />	
+					</control>
+				</panel>
+				<panel width="100%" height="10%" />
+			</panel>	
+		</layer>
+	</screen>
+</nifty>

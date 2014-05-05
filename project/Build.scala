@@ -2,6 +2,9 @@ import sbt._
 import Keys._
 
 object GenGameBuild extends Build {
+
+    val jmeVersion = "3.0.0.20140325-SNAPSHOT"
+
 	val buildSettings = Defaults.defaultSettings ++ Seq(
 		name:="GenGame",
 		version:="0.1",
@@ -14,35 +17,35 @@ object GenGameBuild extends Build {
 		libraryDependencies += "com.typesafe.slick" % "slick_2.11.0-RC4" % "2.1.0-M1",
 		libraryDependencies += "org.xerial" % "sqlite-jdbc" % "3.7.2",
 		libraryDependencies += "org.spire-math" %% "spire" % "0.7.4",
-                libraryDependencies += "org.kolinek" %% "scala-deriving" % "0.2.0", 
+        libraryDependencies += "org.kolinek" %% "scala-deriving" % "0.2.1", 
 		libraryDependencies ++= List("com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2",
 							"ch.qos.logback" % "logback-core" % "1.1.2",
 							"ch.qos.logback" % "logback-classic" % "1.1.2",
 							"org.slf4j" % "slf4j-api" % "1.7.7",
 							"org.slf4j" % "jul-to-slf4j" % "1.7.7"),
-		libraryDependencies ++= List("com.jme3" % "jME3-core" % "3.0.0-SNAPSHOT"
-                            ,"com.jme3" % "jmonkeyengine3" % "3.0.0-SNAPSHOT"
-                            ,"com.jme3" % "jME3-lwjgl" % "3.0.0-SNAPSHOT"
-                            ,"com.jme3" % "jME3-lwjgl-natives" % "3.0.0-SNAPSHOT"
-                            ,"com.jme3" % "lwjgl" % "3.0.0-SNAPSHOT"
-                            ,"com.jme3" % "jME3-jbullet" % "3.0.0-SNAPSHOT"
-                            ,"com.jme3" % "jbullet" % "3.0.0-SNAPSHOT"
-                            ,"com.jme3" % "jME3-blender" % "3.0.0-SNAPSHOT"
-                            ,"com.jme3" % "jME3-desktop" % "3.0.0-SNAPSHOT"
-                            ,"com.jme3" % "jME3-plugins" % "3.0.0-SNAPSHOT"
-                            ,"com.jme3" % "jME3-terrain" % "3.0.0-SNAPSHOT"
-                            ,"com.jme3" % "jME3-jogg" % "3.0.0-SNAPSHOT"
-                            ,"com.jme3" % "j-ogg-oggd" % "3.0.0-SNAPSHOT"
-                            ,"com.jme3" % "j-ogg-vorbisd" % "3.0.0-SNAPSHOT"
-                            ,"com.jme3" % "jinput" % "3.0.0-SNAPSHOT"
-                            ,"com.jme3" % "eventbus" % "3.0.0-SNAPSHOT"
-                            ,"com.jme3" % "stack-alloc" % "3.0.0-SNAPSHOT"
-                            ,"com.jme3" % "vecmath" % "3.0.0-SNAPSHOT"
-                            ,"com.jme3" % "xmlpull-xpp3" % "3.0.0-SNAPSHOT"
-                            ,"com.jme3" % "jME3-niftygui" % "3.0.0-SNAPSHOT"
-                            ,"com.jme3" % "nifty" % "3.0.0-SNAPSHOT"
-                            ,"com.jme3" % "nifty-default-controls" % "3.0.0-SNAPSHOT"
-                            ,"com.jme3" % "nifty-style-black" % "3.0.0-SNAPSHOT"),
+		libraryDependencies ++= List("com.jme3" % "jME3-core" % jmeVersion
+                            ,"com.jme3" % "jmonkeyengine3" % jmeVersion
+                            ,"com.jme3" % "jME3-lwjgl" % jmeVersion
+                            ,"com.jme3" % "jME3-lwjgl-natives" % jmeVersion
+                            ,"com.jme3" % "lwjgl" % jmeVersion
+                            ,"com.jme3" % "jME3-jbullet" % jmeVersion
+                            ,"com.jme3" % "jbullet" % jmeVersion
+                            ,"com.jme3" % "jME3-blender" % jmeVersion
+                            ,"com.jme3" % "jME3-desktop" % jmeVersion
+                            ,"com.jme3" % "jME3-plugins" % jmeVersion
+                            ,"com.jme3" % "jME3-terrain" % jmeVersion
+                            ,"com.jme3" % "jME3-jogg" % jmeVersion
+                            ,"com.jme3" % "j-ogg-oggd" % jmeVersion
+                            ,"com.jme3" % "j-ogg-vorbisd" % jmeVersion
+                            ,"com.jme3" % "jinput" % jmeVersion
+                            ,"com.jme3" % "eventbus" % jmeVersion
+                            ,"com.jme3" % "stack-alloc" % jmeVersion
+                            ,"com.jme3" % "vecmath" % jmeVersion
+                            ,"com.jme3" % "xmlpull-xpp3" % jmeVersion
+                            ,"com.jme3" % "jME3-niftygui" % jmeVersion
+                            ,"com.jme3" % "nifty" % jmeVersion
+                            ,"com.jme3" % "nifty-default-controls" % jmeVersion
+                            ,"com.jme3" % "nifty-style-black" % jmeVersion),
         scalacOptions ++= Seq("-unchecked", "-deprecation", "-feature")
 	)
 	
