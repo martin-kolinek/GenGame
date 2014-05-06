@@ -17,12 +17,14 @@ object GenGameBuild extends Build {
 		libraryDependencies += "com.typesafe.slick" % "slick_2.11.0-RC4" % "2.1.0-M1",
 		libraryDependencies += "org.xerial" % "sqlite-jdbc" % "3.7.2",
 		libraryDependencies += "org.spire-math" %% "spire" % "0.7.4",
-        libraryDependencies += "org.kolinek" %% "scala-deriving" % "0.2.1", 
+                libraryDependencies += "org.kolinek" %% "scala-deriving" % "0.2.1", 
 		libraryDependencies ++= List("com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2",
 							"ch.qos.logback" % "logback-core" % "1.1.2",
 							"ch.qos.logback" % "logback-classic" % "1.1.2",
 							"org.slf4j" % "slf4j-api" % "1.7.7",
 							"org.slf4j" % "jul-to-slf4j" % "1.7.7"),
+		libraryDependencies ++= List("com.typesafe" % "config" % "1.2.1",
+						"net.ceedubs" %% "ficus" % "1.1.0"),
 		libraryDependencies ++= List("com.jme3" % "jME3-core" % jmeVersion
                             ,"com.jme3" % "jmonkeyengine3" % jmeVersion
                             ,"com.jme3" % "jME3-lwjgl" % jmeVersion
