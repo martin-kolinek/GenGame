@@ -15,3 +15,17 @@ trait DefaultConfigProvider extends ConfigProvider {
         withFallback(ConfigFactory.parseFileAnySyntax(path.toFile())).
         withFallback(ConfigFactory.load())
 }
+
+trait ConfigSaver {
+    def saveConfig(config: Config)
+}
+
+trait ConfigSaverComponent {
+    def saver: ConfigSaver
+}
+
+trait DefaultConfigSaverComponent {
+	lazy val saver = new ConfigSaver {
+	    
+	}
+}

@@ -24,6 +24,6 @@ trait DefaultGraphicsConfigProvider extends GraphicsConfigProvider {
     lazy val graphicsConfig = config.as[GraphicsConfig]("graphics")
 }
 
-trait ConfigSaver {
+trait GraphicsConfigSaver {
     def saveGraphicsConfig(c: GraphicsConfig)
 }
