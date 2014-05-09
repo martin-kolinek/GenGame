@@ -8,6 +8,8 @@ import org.kolinek.gengame.config.GraphicsConfigProvider
 import org.kolinek.gengame.threading.GameExecutionContextComponent
 import org.kolinek.gengame.config.ConfigSaver
 import org.kolinek.gengame.config.ConfigSaverComponent
+import de.lessvoid.nifty.Nifty
+import org.kolinek.gengame.threading.BoundFuture
 
 trait Menu {
     def gotoMainMenu()
@@ -16,29 +18,29 @@ trait Menu {
 }
 
 trait MenuComponent {
-    def menu: Menu
+    def menu: BoundFuture[Menu]
 }
 
 trait GameMenuComponent extends MenuComponent with MainMenuComponent with StartMenuComponent with OptionsComponent {
-    self: NiftyProvider with GameControlComponent with GraphicsConfigProvider with GameExecutionContextComponent with ConfigSaverComponent =>
+    self: NiftyProvider with GameControlComponent with GraphicsConfigProvider with GameExecutionContextComponent with ConfigSaverComponent with ConfigProvider =>
 
     lazy val mainMenu = new MainMenu
     lazy val startMenu = new StartMenu
     lazy val options = new OptionsController
 
-    object GameMenu extends Menu {
+    class GameMenu(nifty: Nifty) extends Menu {
         def gotoMainMenu() = {
-            nifty.map(_.gotoScreen(mainMenu.screenId))
+            nifty.gotoScreen(mainMenu.screenId)
         }
         def gotoStartMenu() = {
-            nifty.map(_.gotoScreen(startMenu.screenId))
+            nifty.gotoScreen(startMenu.screenId)
         }
         def gotoOptions() = {
-            nifty.map(_.gotoScreen(options.screenId))
+            nifty.gotoScreen(options.screenId)
         }
     }
 
-    def menu = GameMenu
+    def menu = nifty.map(new GameMenu(_))
 
     nifty.foreach(_.fromXml("gui/menu/gui.xml", "start", mainMenu, startMenu, options))
 }

@@ -11,6 +11,7 @@ import org.kolinek.gengame.config.DefaultConfigProvider
 import org.kolinek.gengame.config.DefaultGraphicsConfigProvider
 import org.kolinek.gengame.threading.JmeExecutionComponent
 import org.kolinek.gengame.threading.DefaultAppProvider
+import org.kolinek.gengame.config.ApplyGraphicsConfigComponent
 
 class GuiAppState extends SimpleAppState {
     class Component
@@ -22,6 +23,7 @@ class GuiAppState extends SimpleAppState {
         with DefaultGraphicsConfigProvider
         with GameMenuComponent
         with AppGameControlComponent
+        with ApplyGraphicsConfigComponent
         with UpdateStep
         with Closeable
 

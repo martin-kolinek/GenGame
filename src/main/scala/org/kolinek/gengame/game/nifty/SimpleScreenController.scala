@@ -15,6 +15,7 @@ import rx.subjects.BehaviorSubject
 
 trait SimpleScreenController
         extends ScreenController
+        with SimpleNiftyControlComponent
         with TextFieldComponent
         with ButtonComponent {
     private var niftyVar: Nifty = null
@@ -29,17 +30,37 @@ trait SimpleScreenController
         setup()
     }
 
-    final def observable[T: ClassTag](c: NiftyControl): Observable[T] = {
-        val subj = PublishSubject.create[T]()
-        val cls = implicitly[ClassTag[T]].runtimeClass.asInstanceOf[Class[T]]
-        nifty.subscribe(screen, c.getId, cls, new EventTopicSubscriber[T] {
-            def onEvent(id: String, ev: T) = subj.onNext(ev)
-        })
-        subj.asObservable
+    trait EventInfo {
+        def registerEvent(id: String)
     }
+
+    private class EventInfoSpec[T: ClassTag](f: T => Unit) extends EventInfo {
+        def registerEvent(id: String) {
+            val cls = implicitly[ClassTag[T]].runtimeClass.asInstanceOf[Class[T]]
+            nifty.subscribe(screen, id, cls, new EventTopicSubscriber[T] {
+                def onEvent(id: String, ev: T) = f(ev)
+            })
+        }
+    }
+
+    protected implicit class SubjectOps[T: ClassTag](s: Subject[T, T]) {
+        def ei: EventInfo = new EventInfoSpec[T](s.onNext _)
+        def eitrans[R: ClassTag](func: R => T): EventInfo = new EventInfoSpec[R](p => s.onNext(func(p)))
+        def obs: Observable[T] = s.asObservable
+    }
+
+    def controls: Seq[SimpleNiftyControl]
 
     def setup() = {}
 
-    def onStartScreen() = {}
-    def onEndScreen() = {}
+    final def onStartScreen() = {
+        for {
+            c <- controls
+            ei <- c.events
+        } {
+            ei.registerEvent(c.id)
+        }
+    }
+    final def onEndScreen() = {
+    }
 }

@@ -21,4 +21,22 @@ trait RXHelper {
             subj.asObservable
         }
     }
+
+    implicit class withLatest[T](obs: Observable[T]) {
+        def withLatest[R](other: Observable[R]) = {
+            other.map(x => obs.map(y => (y, x))).switch
+        }
+    }
+
+    implicit class collectPartFunc[T](obs: Observable[T]) {
+        def collectPartFunc[R](func: PartialFunction[T, R]) = {
+            obs.filter(func.isDefinedAt).map(func)
+        }
+    }
+
+    implicit class subs[T](obs: Observable[T]) {
+        def subs(f: T => Unit) {
+            obs.subscribe(f)
+        }
+    }
 }

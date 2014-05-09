@@ -16,8 +16,10 @@ trait StartMenuComponent {
 
         @NiftyEventSubscriber(id = "BackButton")
         def back(id: String, ev: ButtonClickedEvent) = {
-            menu.gotoMainMenu()
+            menu.foreach(_.gotoMainMenu())
         }
+
+        def controls = Nil
 
         def screenId = "start_game"
     }

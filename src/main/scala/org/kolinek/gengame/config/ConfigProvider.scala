@@ -5,6 +5,7 @@ import java.nio.file.Paths
 import com.typesafe.config.ConfigFactory
 import rx.lang.scala.Observable
 import rx.lang.scala.subjects.BehaviorSubject
+import org.apache.commons.io.FileUtils
 
 trait ConfigProvider {
     def config: Observable[Config]
@@ -28,11 +29,16 @@ trait DefaultConfigProvider extends ConfigProvider with ConfigSaverComponent {
             withFallback(ConfigFactory.load())
     }
 
-    lazy val config = BehaviorSubject(currentConfig())
+    private lazy val subj = BehaviorSubject(currentConfig())
+
+    lazy val config = subj
 
     def configSaver = new ConfigSaver {
         def saveConfig(config: Config) {
-
+            val str = config.withOnlyPath("graphics").root().render()
+            FileUtils.writeStringToFile(path.toFile, str)
+            println("saved config")
+            subj.onNext(currentConfig)
         }
     }
 }

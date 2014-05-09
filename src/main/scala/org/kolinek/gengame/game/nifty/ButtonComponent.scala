@@ -2,14 +2,18 @@ package org.kolinek.gengame.game.nifty
 
 import de.lessvoid.nifty.controls.Button
 import de.lessvoid.nifty.controls.ButtonClickedEvent
+import rx.subjects.PublishSubject
 
 trait ButtonComponent {
-    self: SimpleScreenController =>
+    self: SimpleNiftyControlComponent with SimpleScreenController =>
 
-    class NiftyButton(id: String) {
+    class NiftyButton(val id: String) extends SimpleNiftyControl {
         private val underlying = screen.findNiftyControl(id, classOf[Button])
 
-        lazy val clicks = observable[ButtonClickedEvent](underlying).map(x => {})
+        private val clickSubj = PublishSubject.create[ButtonClickedEvent]
+        val clicks = clickSubj.obs.map(_ => {})
+
+        def events = List(clickSubj.ei)
 
         def setEnabled(enabled: Boolean) = {
             if (enabled)

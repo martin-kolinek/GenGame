@@ -23,9 +23,14 @@ import org.kolinek.gengame.util.tupleFlatten
 import org.kolinek.gengame.util.SomeOps
 import org.kolinek.gengame.config.GraphicsConfig
 import rx.subjects.BehaviorSubject
+import org.kolinek.gengame.util.withLatest
+import org.kolinek.gengame.util.collectPartFunc
+import org.kolinek.gengame.util.subs
+import org.kolinek.gengame.config.ConfigProvider
+import net.ceedubs.ficus.FicusConfig._
 
 trait OptionsComponent extends GameExecutionHelper {
-    self: MenuComponent with GraphicsConfigProvider with GameExecutionContextComponent with ConfigSaverComponent =>
+    self: MenuComponent with GraphicsConfigProvider with GameExecutionContextComponent with ConfigSaverComponent with ConfigProvider =>
 
     class OptionsController extends SimpleScreenController with LazyLogging {
 
@@ -35,7 +40,10 @@ trait OptionsComponent extends GameExecutionHelper {
         lazy val saveButton = new NiftyButton("SaveButton")
         lazy val backButton = new NiftyButton("BackButton")
 
+        def controls = List(widthTf, heightTf, saveButton, backButton)
+
         override def setup(): Unit = {
+
             graphicsConfig.subscribeOnUpdateLoop { conf =>
                 widthTf.setText(conf.width.toString)
                 heightTf.setText(conf.height.toString)
@@ -47,21 +55,27 @@ trait OptionsComponent extends GameExecutionHelper {
                 .map(tupleFlatten)
                 .map(sequence(_).map(GraphicsConfig.tupled))
 
-            optionGraphicsConfig.map(_.isDefined).subscribeOnUpdateLoop { defined =>
-                println(defined)
-                saveButton.setEnabled(defined)
+            optionGraphicsConfig.map(_.isDefined).subscribeOnUpdateLoop(saveButton.setEnabled)
+
+            val graphConf = optionGraphicsConfig.collectPartFunc {
+                case Some(c) => c
             }
 
-            /*saveButton.clicks.subscribe { _ =>
-                configSaver.saveConfig(config)
-                menu.gotoMainMenu()
-            }*/
+            val updatedConf = config.combineLatest(graphConf).map {
+                case (cfg, g) => g.updateConfigSettings(cfg)
+            }
+
+            saveButton.clicks.withLatest(updatedConf).subs {
+                case (_, conf) =>
+                    configSaver.saveConfig(conf)
+                    menu.foreach(_.gotoMainMenu())
+
+            }
 
             backButton.clicks.subscribe { _ =>
-                menu.gotoMainMenu()
+                menu.foreach(_.gotoMainMenu())
             }
         }
-
         def screenId = "options"
     }
 }

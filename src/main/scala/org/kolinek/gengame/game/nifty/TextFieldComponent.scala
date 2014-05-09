@@ -9,13 +9,13 @@ import rx.lang.scala.Observable
 trait TextFieldComponent {
     self: SimpleScreenController =>
 
-    class NiftyTextField(id: String) {
+    class NiftyTextField(val id: String) extends SimpleNiftyControl {
         private val underlying = screen.findNiftyControl(id, classOf[TextField])
         private val textSubj = BehaviorSubject.create(underlying.getRealText)
 
-        lazy val text: Observable[String] = textSubj.asObservable.distinct
+        val text = textSubj.obs.distinctUntilChanged
 
-        observable[TextFieldChangedEvent](underlying).map(_.getText).subscribe(textSubj)
+        def events = List(textSubj.eitrans[TextFieldChangedEvent](_.getText))
 
         def setText(txt: String) = {
             textSubj.onNext(txt)

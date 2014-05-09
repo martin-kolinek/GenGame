@@ -13,8 +13,8 @@ class BoundFuture[T] private (underlying: Future[T], ec: ExecutionContext) {
     def flatMap[R](f: T => Future[R]) = {
         new BoundFuture(underlying.flatMap(f), ec)
     }
-    
-    def foreach(f:T => Unit) = {
+
+    def foreach(f: T => Unit) = {
         underlying.foreach(f)
     }
 }
