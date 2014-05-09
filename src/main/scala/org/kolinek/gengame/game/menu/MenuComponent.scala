@@ -28,17 +28,17 @@ trait GameMenuComponent extends MenuComponent with MainMenuComponent with StartM
 
     object GameMenu extends Menu {
         def gotoMainMenu() = {
-            nifty.gotoScreen(mainMenu.screenId)
+            nifty.map(_.gotoScreen(mainMenu.screenId))
         }
         def gotoStartMenu() = {
-            nifty.gotoScreen(startMenu.screenId)
+            nifty.map(_.gotoScreen(startMenu.screenId))
         }
         def gotoOptions() = {
-            nifty.gotoScreen(options.screenId)
+            nifty.map(_.gotoScreen(options.screenId))
         }
     }
 
     def menu = GameMenu
 
-    nifty.fromXml("gui/menu/gui.xml", "start", mainMenu, startMenu, options)
+    nifty.foreach(_.fromXml("gui/menu/gui.xml", "start", mainMenu, startMenu, options))
 }

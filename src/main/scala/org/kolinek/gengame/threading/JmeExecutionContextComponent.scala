@@ -2,10 +2,12 @@ package org.kolinek.gengame.threading
 
 import java.util.concurrent.Callable
 import scala.concurrent.ExecutionContext
-import org.kolinek.gengame.game.AppProvider
 import org.kolinek.gengame.game.Game
 import org.kolinek.gengame.util.subscribeFuture
 import rx.lang.scala.Observable
+import org.kolinek.gengame.game.UnsafeAppProvider
+import javax.swing.BoundedRangeModel
+import org.kolinek.gengame.game.UnsafeAppProvider
 
 trait GameExecutionContextComponent {
     def gameExecutionContext: ExecutionContext
@@ -22,8 +24,18 @@ class JmeExecutionContext(app: Game) extends ExecutionContext {
 }
 
 trait JmeExecutionComponent extends GameExecutionContextComponent {
-    self: AppProvider =>
-    lazy val gameExecutionContext = new JmeExecutionContext(app)
+    self: UnsafeAppProvider =>
+    lazy val gameExecutionContext = new JmeExecutionContext(unsafeApp)
+}
+
+trait AppProvider {
+    def app: BoundFuture[Game]
+}
+
+trait DefaultAppProvider extends AppProvider {
+    self: UnsafeAppProvider with JmeExecutionComponent =>
+
+    def app = BoundFuture(gameExecutionContext)(unsafeApp)
 }
 
 trait GameExecutionHelper {

@@ -23,7 +23,7 @@ trait MainMenuComponent {
 
         @NiftyEventSubscriber(id = "QuitButton")
         def quitGame(id: String, ev: ButtonClickedEvent): Unit = {
-            gameControl.quitGame()
+            gameControl.foreach(_.quitGame())
         }
 
         def screenId = "start"

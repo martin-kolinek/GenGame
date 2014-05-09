@@ -5,7 +5,7 @@ import java.nio.file.Paths
 import com.typesafe.config.ConfigFactory
 import net.ceedubs.ficus.FicusConfig._
 import rx.lang.scala.Observable
-import org.kolinek.gengame.game.AppProvider
+import org.kolinek.gengame.threading.AppProvider
 
 case class GraphicsConfig(width: Int, height: Int, fullscreen: Boolean) {
     def toJmeSettings = {
@@ -30,7 +30,7 @@ trait ApplyGraphicsConfigComponent {
     self: GraphicsConfigProvider with AppProvider =>
 
     graphicsConfig.subscribe { conf =>
-        app.setSettings(conf.toJmeSettings)
-        app.restart()
+        app.map(_.setSettings(conf.toJmeSettings))
+        app.map(_.restart())
     }
 }

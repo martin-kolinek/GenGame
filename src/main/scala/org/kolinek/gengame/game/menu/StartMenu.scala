@@ -11,7 +11,7 @@ trait StartMenuComponent {
     class StartMenu extends SimpleScreenController {
         @NiftyEventSubscriber(id = "OKButton")
         def startGame(id: String, ev: ButtonClickedEvent) = {
-            gameControl.startGame()
+            gameControl.foreach(_.startGame())
         }
 
         @NiftyEventSubscriber(id = "BackButton")

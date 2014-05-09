@@ -10,6 +10,8 @@ import com.jme3.material.Material
 import com.jme3.math.ColorRGBA
 import com.jme3.app.SimpleApplication
 import com.jme3.app.StatsAppState
+import org.kolinek.gengame.threading.BoundFuture
+import org.kolinek.gengame.threading.AppProvider
 
 trait GameControl {
     def quitGame(): Unit
@@ -17,7 +19,7 @@ trait GameControl {
 }
 
 trait GameControlComponent {
-    def gameControl: GameControl
+    def gameControl: BoundFuture[GameControl]
 }
 
 class AppGameControl(app: Game) extends GameControl {
@@ -37,5 +39,5 @@ class AppGameControl(app: Game) extends GameControl {
 
 trait AppGameControlComponent extends GameControlComponent {
     self: AppProvider =>
-    def gameControl = new AppGameControl(app)
+    def gameControl = app.map(new AppGameControl(_))
 }

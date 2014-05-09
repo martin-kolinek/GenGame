@@ -1,7 +1,8 @@
 package org.kolinek.gengame.game.nifty
 
 import de.lessvoid.nifty.Nifty
+import org.kolinek.gengame.threading.BoundFuture
 
 trait NiftyProvider {
-    def nifty: Nifty
+    def nifty: BoundFuture[Nifty]
 }

@@ -5,6 +5,7 @@ import com.jme3.app.SimpleApplication
 import com.jme3.app.Application
 import com.jme3.app.state.AppStateManager
 import org.kolinek.gengame.util.Closeable
+import org.kolinek.gengame.threading.GameExecutionContextComponent
 
 trait SimpleAppState extends AbstractAppState {
     self =>
@@ -14,8 +15,8 @@ trait SimpleAppState extends AbstractAppState {
 
     private var compVar: Closeable with UpdateStep = null
 
-    trait GameAppProvider extends AppProvider {
-        def app = self.app.asInstanceOf[Game]
+    trait GameAppProvider extends UnsafeAppProvider {
+        def unsafeApp = self.app.asInstanceOf[Game]
     }
 
     override final def initialize(stateManager: AppStateManager, app: Application) = {
