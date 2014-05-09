@@ -10,6 +10,7 @@ import org.kolinek.gengame.game.menu.GuiAppState
 class Game extends SimpleApplication(new GuiAppState, new DebugKeysAppState) {
 
     def simpleInitApp(): Unit = {
+        
     }
 }
 

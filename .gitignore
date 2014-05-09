@@ -1,9 +1,8 @@
 #eclipse stuff
-/.classpath
-/.project
-/.cache
-/.settings
-/*.log
+.classpath
+.project
+.cache
+.settings
 
 #sbt stuff
 target/
@@ -15,3 +14,4 @@ target/
 #temp files
 *~
 /bin
+/*.log
