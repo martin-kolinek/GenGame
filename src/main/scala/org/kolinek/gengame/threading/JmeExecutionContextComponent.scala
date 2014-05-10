@@ -29,16 +29,6 @@ trait JmeExecutionComponent extends GameExecutionContextComponent {
     lazy val gameExecutionContext = new JmeExecutionContext(unsafeApp)
 }
 
-trait AppProvider {
-    def app: BoundFuture[Game]
-}
-
-trait DefaultAppProvider extends AppProvider {
-    self: UnsafeAppProvider with JmeExecutionComponent =>
-
-    def app = BoundFuture(gameExecutionContext)(unsafeApp)
-}
-
 trait GameExecutionHelper extends ErrorHelpers {
     self: GameExecutionContextComponent with ErrorLoggingComponent =>
 

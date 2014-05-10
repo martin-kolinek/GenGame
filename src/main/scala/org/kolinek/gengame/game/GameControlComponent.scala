@@ -11,7 +11,6 @@ import com.jme3.math.ColorRGBA
 import com.jme3.app.SimpleApplication
 import com.jme3.app.StatsAppState
 import org.kolinek.gengame.threading.BoundFuture
-import org.kolinek.gengame.threading.AppProvider
 
 trait GameControl {
     def quitGame(): Unit
@@ -28,12 +27,7 @@ class AppGameControl(app: Game) extends GameControl {
         val state = app.getStateManager.getState(classOf[GuiAppState])
         app.getStateManager.detach(state)
         app.getStateManager.attachAll(new FlyCamAppState, new StatsAppState)
-        val b = new Box(1, 1, 1)
-        val geom = new Geometry("Box", b)
-        val mat = new Material(app.getAssetManager, "Common/MatDefs/Misc/Unshaded.j3md")
-        mat.setColor("Color", ColorRGBA.Blue)
-        geom.setMaterial(mat)
-        app.getRootNode.attachChild(geom)
+        
     }
 }
 

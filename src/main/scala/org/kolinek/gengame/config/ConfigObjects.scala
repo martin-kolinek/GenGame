@@ -7,16 +7,13 @@ import com.typesafe.config.ConfigValueFactory
 import scala.collection.JavaConversions._
 import com.jme3.system.AppSettings
 
-case class AllConfig(graphics: GraphicsConfig) extends ConvertableToMap
+case class AllConfig(graphics: GraphicsConfig, controls: ControlsConfig) extends ConvertableToMap
 
-case class GraphicsConfig(width: Int, height: Int, fullscreen: Boolean) extends ConvertableToMap {
-    def toJmeSettings = {
-        val settings = new AppSettings(true)
-        settings.setResolution(width, height)
-        settings.setFullscreen(fullscreen)
-        settings
-    }
-}
+case class GraphicsConfig(width: Int, height: Int, fullscreen: Boolean) extends ConvertableToMap
+
+case class ControlsConfig(forward: Seq[Int], back: Seq[Int],
+                          left: Seq[Int], right: Seq[Int],
+                          up: Seq[Int], down: Seq[Int]) extends ConvertableToMap
 
 object Lenses {
     val allConfigLens = new Lens[Config, AllConfig] {
@@ -25,4 +22,6 @@ object Lenses {
     }
 
     val graphicsConfigLens = allConfigLens >> 'graphics
+
+    val controlsConfigLens = allConfigLens >> 'controls
 }

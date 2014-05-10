@@ -5,13 +5,13 @@ import java.nio.file.Paths
 import com.typesafe.config.ConfigFactory
 import net.ceedubs.ficus.FicusConfig._
 import rx.lang.scala.Observable
-import org.kolinek.gengame.threading.AppProvider
 import com.typesafe.config.Config
 import com.typesafe.config.ConfigValue
 import com.typesafe.config.ConfigObject
 import com.typesafe.config.ConfigValueFactory
 import org.kolinek.gengame.threading.ErrorHelpers
 import org.kolinek.gengame.reporting.ErrorLoggingComponent
+import org.kolinek.gengame.game.AppProvider
 
 trait GraphicsConfigProvider {
     def graphicsConfig: Observable[GraphicsConfig]
@@ -27,7 +27,12 @@ trait ApplyGraphicsConfigComponent extends ErrorHelpers {
     self: GraphicsConfigProvider with AppProvider with ErrorLoggingComponent =>
 
     graphicsConfig.foreach { conf =>
-        app.map(_.setSettings(conf.toJmeSettings))
-        app.map(_.restart())
+        app.foreach { a =>
+            val settings = new AppSettings(true)
+            settings.setResolution(conf.width, conf.height)
+            settings.setFullscreen(conf.fullscreen)
+            a.setSettings(settings)
+            a.restart
+        }
     }
 }

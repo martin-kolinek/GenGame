@@ -10,10 +10,10 @@ import org.kolinek.gengame.game.AppGameControlComponent
 import org.kolinek.gengame.config.DefaultConfigProvider
 import org.kolinek.gengame.config.DefaultGraphicsConfigProvider
 import org.kolinek.gengame.threading.JmeExecutionComponent
-import org.kolinek.gengame.threading.DefaultAppProvider
 import org.kolinek.gengame.config.ApplyGraphicsConfigComponent
 import org.kolinek.gengame.config.DefaultConfigSaver
 import org.kolinek.gengame.reporting.DefaultErrorLoggingComponent
+import org.kolinek.gengame.game.DefaultAppProvider
 
 class GuiAppState extends SimpleAppState {
     class Component

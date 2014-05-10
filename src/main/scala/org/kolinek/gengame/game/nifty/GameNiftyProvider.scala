@@ -2,9 +2,9 @@ package org.kolinek.gengame.game.nifty
 
 import org.kolinek.gengame.util.Closeable
 import com.jme3.niftygui.NiftyJmeDisplay
-import org.kolinek.gengame.threading.AppProvider
 import org.kolinek.gengame.threading.ErrorHelpers
 import org.kolinek.gengame.reporting.ErrorLoggingComponent
+import org.kolinek.gengame.game.AppProvider
 
 trait GameNiftyProvider extends NiftyProvider with Closeable with ErrorHelpers {
     self: AppProvider with ErrorLoggingComponent =>
