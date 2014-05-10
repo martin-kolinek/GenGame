@@ -76,7 +76,7 @@
 				</panel>
 				<panel width="100%" height="60%" />
 				<panel width="80%" height="10%" childLayout="horizontal" align="center">
-					<control name="button" id="SaveButton" label="Save" width="40%" height="100%" />
+					<control name="button" id="ApplyButton" label="Save" width="40%" height="100%" />
 					<panel width="20%" height="100%" />
 					<control name="button" id="BackButton" label="Back" width="40%" height="100%" />
 				</panel>

@@ -12,13 +12,17 @@ import org.kolinek.gengame.config.DefaultGraphicsConfigProvider
 import org.kolinek.gengame.threading.JmeExecutionComponent
 import org.kolinek.gengame.threading.DefaultAppProvider
 import org.kolinek.gengame.config.ApplyGraphicsConfigComponent
+import org.kolinek.gengame.config.DefaultConfigSaver
+import org.kolinek.gengame.reporting.DefaultErrorLoggingComponent
 
 class GuiAppState extends SimpleAppState {
     class Component
         extends GameAppProvider
         with JmeExecutionComponent
         with DefaultAppProvider
+        with DefaultErrorLoggingComponent
         with GameNiftyProvider
+        with DefaultConfigSaver
         with DefaultConfigProvider
         with DefaultGraphicsConfigProvider
         with GameMenuComponent

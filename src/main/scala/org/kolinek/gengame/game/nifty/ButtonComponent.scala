@@ -2,7 +2,7 @@ package org.kolinek.gengame.game.nifty
 
 import de.lessvoid.nifty.controls.Button
 import de.lessvoid.nifty.controls.ButtonClickedEvent
-import rx.subjects.PublishSubject
+import rx.lang.scala.Subject
 
 trait ButtonComponent {
     self: SimpleNiftyControlComponent with SimpleScreenController =>
@@ -10,7 +10,7 @@ trait ButtonComponent {
     class NiftyButton(val id: String) extends SimpleNiftyControl {
         private val underlying = screen.findNiftyControl(id, classOf[Button])
 
-        private val clickSubj = PublishSubject.create[ButtonClickedEvent]
+        private val clickSubj = Subject[ButtonClickedEvent]()
         val clicks = clickSubj.obs.map(_ => {})
 
         def events = List(clickSubj.ei)

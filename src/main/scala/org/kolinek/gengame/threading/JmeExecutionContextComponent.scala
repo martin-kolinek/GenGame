@@ -3,11 +3,12 @@ package org.kolinek.gengame.threading
 import java.util.concurrent.Callable
 import scala.concurrent.ExecutionContext
 import org.kolinek.gengame.game.Game
-import org.kolinek.gengame.util.subscribeFuture
 import rx.lang.scala.Observable
 import org.kolinek.gengame.game.UnsafeAppProvider
 import javax.swing.BoundedRangeModel
 import org.kolinek.gengame.game.UnsafeAppProvider
+import org.kolinek.gengame.reporting.ErrorLoggingComponent
+import scala.concurrent.Future
 
 trait GameExecutionContextComponent {
     def gameExecutionContext: ExecutionContext
@@ -38,10 +39,15 @@ trait DefaultAppProvider extends AppProvider {
     def app = BoundFuture(gameExecutionContext)(unsafeApp)
 }
 
-trait GameExecutionHelper {
-    self: GameExecutionContextComponent =>
+trait GameExecutionHelper extends ErrorHelpers {
+    self: GameExecutionContextComponent with ErrorLoggingComponent =>
 
     implicit class SubscribeGameExecOps[T](obs: Observable[T]) {
-        def subscribeOnUpdateLoop(act: T => Unit) = obs.subscribeFuture(gameExecutionContext)(act)
+        def subscribeOnUpdateLoop(act: T => Unit) = obs.foreach { x =>
+            val f = Future(act(x))(gameExecutionContext)
+            f.onFailure {
+                case thr => errorLogger.logError(thr)
+            }(gameExecutionContext)
+        }
     }
 }

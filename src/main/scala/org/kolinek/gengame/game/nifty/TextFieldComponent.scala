@@ -1,17 +1,17 @@
 package org.kolinek.gengame.game.nifty
 
-import rx.subjects.BehaviorSubject
 import de.lessvoid.nifty.controls.TextField
 import de.lessvoid.nifty.controls.TextFieldChangedEvent
 import rx.lang.scala.JavaConversions._
 import rx.lang.scala.Observable
+import rx.lang.scala.subjects.BehaviorSubject
 
 trait TextFieldComponent {
     self: SimpleScreenController =>
 
     class NiftyTextField(val id: String) extends SimpleNiftyControl {
         private val underlying = screen.findNiftyControl(id, classOf[TextField])
-        private val textSubj = BehaviorSubject.create(underlying.getRealText)
+        private val textSubj = BehaviorSubject(underlying.getRealText)
 
         val text = textSubj.obs.distinctUntilChanged
 

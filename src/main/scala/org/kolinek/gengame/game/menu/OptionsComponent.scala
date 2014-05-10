@@ -7,9 +7,7 @@ import org.kolinek.gengame.threading.GameExecutionContextComponent
 import de.lessvoid.nifty.screen.Screen
 import de.lessvoid.nifty.controls.TextField
 import com.typesafe.scalalogging.slf4j.LazyLogging
-import org.kolinek.gengame.config.ConfigSaver
 import de.lessvoid.nifty.controls.Button
-import org.kolinek.gengame.config.ConfigSaverComponent
 import de.lessvoid.nifty.NiftyEventSubscriber
 import de.lessvoid.nifty.controls.ButtonClickedEvent
 import de.lessvoid.nifty.controls.TextFieldChangedEvent
@@ -25,22 +23,25 @@ import org.kolinek.gengame.config.GraphicsConfig
 import rx.subjects.BehaviorSubject
 import org.kolinek.gengame.util.withLatest
 import org.kolinek.gengame.util.collectPartFunc
-import org.kolinek.gengame.util.subs
 import org.kolinek.gengame.config.ConfigProvider
 import net.ceedubs.ficus.FicusConfig._
+import org.kolinek.gengame.config.ConfigUpdaterComponent
+import org.kolinek.gengame.config.Lenses
+import org.kolinek.gengame.threading.ErrorHelpers
+import org.kolinek.gengame.reporting.ErrorLoggingComponent
 
-trait OptionsComponent extends GameExecutionHelper {
-    self: MenuComponent with GraphicsConfigProvider with GameExecutionContextComponent with ConfigSaverComponent with ConfigProvider =>
+trait OptionsComponent extends GameExecutionHelper with ErrorHelpers {
+    self: MenuComponent with GraphicsConfigProvider with GameExecutionContextComponent with ConfigUpdaterComponent with ConfigProvider with ErrorLoggingComponent =>
 
     class OptionsController extends SimpleScreenController with LazyLogging {
 
         lazy val widthTf = new NiftyTextField("WidthTextField")
         lazy val heightTf = new NiftyTextField("HeightTextField")
 
-        lazy val saveButton = new NiftyButton("SaveButton")
+        lazy val applyButton = new NiftyButton("ApplyButton")
         lazy val backButton = new NiftyButton("BackButton")
 
-        def controls = List(widthTf, heightTf, saveButton, backButton)
+        def controls = List(widthTf, heightTf, applyButton, backButton)
 
         override def setup(): Unit = {
 
@@ -55,24 +56,18 @@ trait OptionsComponent extends GameExecutionHelper {
                 .map(tupleFlatten)
                 .map(sequence(_).map(GraphicsConfig.tupled))
 
-            optionGraphicsConfig.map(_.isDefined).subscribeOnUpdateLoop(saveButton.setEnabled)
+            optionGraphicsConfig.map(_.isDefined).subscribeOnUpdateLoop(applyButton.setEnabled)
 
             val graphConf = optionGraphicsConfig.collectPartFunc {
                 case Some(c) => c
             }
 
-            val updatedConf = config.combineLatest(graphConf).map {
-                case (cfg, g) => g.updateConfigSettings(cfg)
-            }
-
-            saveButton.clicks.withLatest(updatedConf).subs {
+            applyButton.clicks.withLatest(graphConf).foreach {
                 case (_, conf) =>
-                    configSaver.saveConfig(conf)
-                    menu.foreach(_.gotoMainMenu())
-
+                    configUpdater.updateConfig(Lenses.graphicsConfigLens.set(_)(conf))
             }
 
-            backButton.clicks.subscribe { _ =>
+            backButton.clicks.foreach { _ =>
                 menu.foreach(_.gotoMainMenu())
             }
         }

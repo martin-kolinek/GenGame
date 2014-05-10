@@ -3,9 +3,11 @@ package org.kolinek.gengame.game.nifty
 import org.kolinek.gengame.util.Closeable
 import com.jme3.niftygui.NiftyJmeDisplay
 import org.kolinek.gengame.threading.AppProvider
+import org.kolinek.gengame.threading.ErrorHelpers
+import org.kolinek.gengame.reporting.ErrorLoggingComponent
 
-trait GameNiftyProvider extends NiftyProvider with Closeable {
-    self: AppProvider =>
+trait GameNiftyProvider extends NiftyProvider with Closeable with ErrorHelpers {
+    self: AppProvider with ErrorLoggingComponent =>
 
     lazy val niftyDisplay = for (a <- app) yield {
         val disp = new NiftyJmeDisplay(a.getAssetManager(), a.getInputManager(), a.getAudioRenderer(), a.getGuiViewPort())

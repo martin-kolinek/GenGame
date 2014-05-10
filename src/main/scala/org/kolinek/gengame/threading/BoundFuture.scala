@@ -2,6 +2,7 @@ package org.kolinek.gengame.threading
 
 import scala.concurrent.ExecutionContext
 import scala.concurrent.Future
+import scala.util.Try
 
 class BoundFuture[T] private (underlying: Future[T], ec: ExecutionContext) {
     private implicit val ctx = ec
@@ -14,8 +15,8 @@ class BoundFuture[T] private (underlying: Future[T], ec: ExecutionContext) {
         new BoundFuture(underlying.flatMap(f), ec)
     }
 
-    def foreach(f: T => Unit) = {
-        underlying.foreach(f)
+    def onComplete(f: Try[T] => Unit) = {
+        underlying.onComplete(f(_))
     }
 }
 

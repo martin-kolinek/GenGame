@@ -10,21 +10,8 @@ import com.typesafe.config.Config
 import com.typesafe.config.ConfigValue
 import com.typesafe.config.ConfigObject
 import com.typesafe.config.ConfigValueFactory
-
-case class GraphicsConfig(width: Int, height: Int, fullscreen: Boolean) {
-    def toJmeSettings = {
-        val settings = new AppSettings(true)
-        settings.setResolution(width, height)
-        settings.setFullscreen(fullscreen)
-        settings
-    }
-
-    def updateConfigSettings(c: Config) = c
-        .withValue("graphics.width", ConfigValueFactory.fromAnyRef(width))
-        .withValue("graphics.height", ConfigValueFactory.fromAnyRef(height))
-        .withValue("graphics.fullscreen", ConfigValueFactory.fromAnyRef(fullscreen))
-
-}
+import org.kolinek.gengame.threading.ErrorHelpers
+import org.kolinek.gengame.reporting.ErrorLoggingComponent
 
 trait GraphicsConfigProvider {
     def graphicsConfig: Observable[GraphicsConfig]
@@ -33,13 +20,13 @@ trait GraphicsConfigProvider {
 trait DefaultGraphicsConfigProvider extends GraphicsConfigProvider {
     self: ConfigProvider =>
 
-    lazy val graphicsConfig = config.map(_.as[GraphicsConfig]("graphics"))
+    lazy val graphicsConfig = config.map(Lenses.graphicsConfigLens.get)
 }
 
-trait ApplyGraphicsConfigComponent {
-    self: GraphicsConfigProvider with AppProvider =>
+trait ApplyGraphicsConfigComponent extends ErrorHelpers {
+    self: GraphicsConfigProvider with AppProvider with ErrorLoggingComponent =>
 
-    graphicsConfig.subscribe { conf =>
+    graphicsConfig.foreach { conf =>
         app.map(_.setSettings(conf.toJmeSettings))
         app.map(_.restart())
     }

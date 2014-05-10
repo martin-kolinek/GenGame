@@ -8,12 +8,6 @@ import rx.subjects.BehaviorSubject
 import rx.lang.scala.JavaConversions._
 
 trait RXHelper {
-    implicit class subscribeFuture[T](obs: Observable[T]) {
-        def subscribeFuture(ctx: ExecutionContext)(act: T => Unit) = obs.subscribe(p => Future {
-            act(p)
-        }(ctx))
-    }
-
     implicit class toBehavior[T](obs: Observable[T]) {
         def toBehavior(init: T): Observable[T] = {
             val subj = BehaviorSubject.create(init)
@@ -31,12 +25,6 @@ trait RXHelper {
     implicit class collectPartFunc[T](obs: Observable[T]) {
         def collectPartFunc[R](func: PartialFunction[T, R]) = {
             obs.filter(func.isDefinedAt).map(func)
-        }
-    }
-
-    implicit class subs[T](obs: Observable[T]) {
-        def subs(f: T => Unit) {
-            obs.subscribe(f)
         }
     }
 }

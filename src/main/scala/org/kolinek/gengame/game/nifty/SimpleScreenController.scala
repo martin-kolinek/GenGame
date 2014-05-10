@@ -8,10 +8,8 @@ import de.lessvoid.nifty.controls.Controller
 import de.lessvoid.nifty.controls.NiftyControl
 import org.bushe.swing.event.EventTopicSubscriber
 import rx.lang.scala.Observable
-import rx.subjects.PublishSubject
 import rx.lang.scala.JavaConversions._
-import rx.subjects.Subject
-import rx.subjects.BehaviorSubject
+import rx.lang.scala.Subject
 
 trait SimpleScreenController
         extends ScreenController
@@ -43,7 +41,7 @@ trait SimpleScreenController
         }
     }
 
-    protected implicit class SubjectOps[T: ClassTag](s: Subject[T, T]) {
+    protected implicit class SubjectOps[T: ClassTag](s: Subject[T]) {
         def ei: EventInfo = new EventInfoSpec[T](s.onNext _)
         def eitrans[R: ClassTag](func: R => T): EventInfo = new EventInfoSpec[R](p => s.onNext(func(p)))
         def obs: Observable[T] = s.asObservable

@@ -5,9 +5,11 @@ import org.kolinek.gengame.game.SimpleAppState
 import org.kolinek.gengame.game.GameControlComponent
 import de.lessvoid.nifty.NiftyEventSubscriber
 import de.lessvoid.nifty.controls.ButtonClickedEvent
+import org.kolinek.gengame.threading.ErrorHelpers
+import org.kolinek.gengame.reporting.ErrorLoggingComponent
 
-trait MainMenuComponent {
-    self: MenuComponent with GameControlComponent =>
+trait MainMenuComponent extends ErrorHelpers {
+    self: MenuComponent with GameControlComponent with ErrorLoggingComponent =>
 
     class MainMenu extends SimpleScreenController {
 

@@ -6,41 +6,48 @@ import com.typesafe.config.ConfigFactory
 import rx.lang.scala.Observable
 import rx.lang.scala.subjects.BehaviorSubject
 import org.apache.commons.io.FileUtils
+import com.typesafe.config.ConfigValueFactory
+import scala.collection.JavaConversions._
+import rx.lang.scala.Subscription
+import rx.lang.scala.Subject
+import rx.lang.scala.JavaConversions._
+import org.kolinek.gengame.util.withLatest
+import org.kolinek.gengame.threading.ErrorHelpers
+import org.kolinek.gengame.reporting.ErrorLoggingComponent
 
 trait ConfigProvider {
     def config: Observable[Config]
 }
 
-trait ConfigSaver {
-    def saveConfig(config: Config): Unit
+trait ConfigUpdater {
+    def updateConfig(trans: Config => Config): Unit
 }
 
-trait ConfigSaverComponent {
-    def configSaver: ConfigSaver
+trait ConfigUpdaterComponent {
+    def configUpdater: ConfigUpdater
 }
 
-trait DefaultConfigProvider extends ConfigProvider with ConfigSaverComponent {
+trait DefaultConfigProvider extends ConfigProvider with ConfigUpdaterComponent with ErrorHelpers {
+    self: ConfigSaver with ErrorLoggingComponent =>
 
-    private def path = Paths.get(System.getProperty("user.home"), ".GenGame", "config.conf")
-
-    private def currentConfig() = {
-        ConfigFactory.systemProperties().
-            withFallback(ConfigFactory.parseFileAnySyntax(path.toFile())).
-            withFallback(ConfigFactory.load())
-    }
-
-    private lazy val subj = BehaviorSubject(currentConfig())
+    private lazy val subj = BehaviorSubject(configFromFile)
 
     lazy val config = subj
 
-    def configSaver = new ConfigSaver {
-        def saveConfig(config: Config) {
-            val str = config.withOnlyPath("graphics").root().render()
-            FileUtils.writeStringToFile(path.toFile, str)
-            println("saved config")
-            subj.onNext(currentConfig)
+    lazy val configUpdater = new ConfigUpdater {
+        val updateSubj = Subject[Config => Config]()
+
+        def updateConfig(trans: Config => Config) {
+            updateSubj.onNext(trans)
         }
+
+        updateSubj.withLatest(config).map {
+            case (trans, cfg) => trans(cfg)
+        }.foreach({ x =>
+            subj.onNext(x)
+        })
     }
+
 }
 
 
