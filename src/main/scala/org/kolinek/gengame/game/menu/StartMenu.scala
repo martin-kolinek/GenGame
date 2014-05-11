@@ -11,14 +11,16 @@ trait StartMenuComponent extends ErrorHelpers {
     self: MenuComponent with GameControlComponent with ErrorLoggingComponent =>
 
     class StartMenu extends SimpleScreenController {
-        @NiftyEventSubscriber(id = "OKButton")
-        def startGame(id: String, ev: ButtonClickedEvent) = {
-            gameControl.foreach(_.startGame())
-        }
+        lazy val startButton = new NiftyButton("OKButton")
+        lazy val backButton = new NiftyButton("BackButton")
 
-        @NiftyEventSubscriber(id = "BackButton")
-        def back(id: String, ev: ButtonClickedEvent) = {
-            menu.foreach(_.gotoMainMenu())
+        def setup() {
+            startButton.clicks.foreach { _ =>
+                gameControl.foreach(_.startGame())
+            }
+            backButton.clicks.foreach { _ =>
+                menu.foreach(_.gotoMainMenu())
+            }
         }
 
         def controls = Nil

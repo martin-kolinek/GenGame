@@ -14,6 +14,8 @@ import org.kolinek.gengame.config.DefaultConfigProvider
 import org.kolinek.gengame.config.DefaultConfigSaver
 import org.kolinek.gengame.game.DefaultAssetManager
 import org.kolinek.gengame.game.DefaultSceneGraphProvider
+import org.kolinek.gengame.game.nifty.GameNiftyProvider
+import org.kolinek.gengame.reporting.DefaultFPSCounterComponent
 
 class MainAppState extends SimpleAppState {
     class Component
@@ -34,6 +36,10 @@ class MainAppState extends SimpleAppState {
         with CubeComponent
         with DefaultAssetManager
         with DefaultSceneGraphProvider
+        with MainNiftyComponent
+        with GameNiftyProvider
+        with DefaultFPSCounterComponent
+        with DefaultCameraPosition
 
     def component = new Component
 }

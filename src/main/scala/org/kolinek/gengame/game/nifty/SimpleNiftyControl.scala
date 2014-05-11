@@ -1,5 +1,7 @@
 package org.kolinek.gengame.game.nifty
 
+import scala.reflect.ClassTag
+
 trait SimpleNiftyControlComponent {
     self: SimpleScreenController =>
 

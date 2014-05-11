@@ -13,22 +13,23 @@ trait MainMenuComponent extends ErrorHelpers {
 
     class MainMenu extends SimpleScreenController {
 
-        @NiftyEventSubscriber(id = "StartButton")
-        def startGame(id: String, ev: ButtonClickedEvent): Unit = {
-            menu.foreach(_.gotoStartMenu())
-        }
+        val startButton = new NiftyButton("StartButton")
+        val optionsButton = new NiftyButton("OptionsButton")
+        val quitButton = new NiftyButton("QuitButton")
 
-        @NiftyEventSubscriber(id = "OptionsButton")
-        def options(id: String, ev: ButtonClickedEvent): Unit = {
-            menu.foreach(_.gotoOptions())
-        }
+        def controls = List(startButton, optionsButton, quitButton)
 
-        @NiftyEventSubscriber(id = "QuitButton")
-        def quitGame(id: String, ev: ButtonClickedEvent): Unit = {
-            gameControl.foreach(_.quitGame())
+        def setup() {
+            startButton.clicks.foreach { _ =>
+                menu.foreach(_.gotoStartMenu())
+            }
+            optionsButton.clicks.foreach { _ =>
+                menu.foreach(_.gotoOptions())
+            }
+            quitButton.clicks.foreach { _ =>
+                gameControl.foreach(_.quitGame())
+            }
         }
-
-        def controls = Nil
 
         def screenId = "start"
     }

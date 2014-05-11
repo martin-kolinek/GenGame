@@ -4,7 +4,7 @@ import rx.lang.scala.Observable
 import rx.lang.scala.Subject
 
 trait UpdateStep {
-    def update(tpf: Float) = {}
+    def update(tpf: Float)
 }
 
 trait UpdateComponent {
@@ -16,8 +16,7 @@ trait DefaultUpdateComponent extends UpdateStep with UpdateComponent {
 
     lazy val updates = updateSubj
 
-    abstract override def update(tpf: Float) = {
-        super.update(tpf)
+    def update(tpf: Float) = {
         updateSubj.onNext(tpf)
     }
 }

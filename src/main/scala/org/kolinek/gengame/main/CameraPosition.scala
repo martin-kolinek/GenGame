@@ -7,23 +7,26 @@ import org.kolinek.gengame.game.JmeCameraComponent
 import rx.lang.scala.subjects.BehaviorSubject
 import org.kolinek.gengame.threading.ErrorHelpers
 import org.kolinek.gengame.reporting.ErrorLoggingComponent
+import org.kolinek.gengame.game.UpdateComponent
+import org.kolinek.gengame.util._
+import org.kolinek.gengame.threading._
 
-trait CameraPosition {
+trait CameraPositionComponent {
     def cameraPosition: Observable[Position]
 }
 
-trait DefaultCameraPosition extends UpdateStep with CameraPosition with ErrorHelpers {
-    self: JmeCameraComponent with ErrorLoggingComponent =>
+trait DefaultCameraPosition extends CameraPositionComponent with ErrorHelpers {
+    self: JmeCameraComponent with ErrorLoggingComponent with UpdateComponent =>
 
-    private lazy val camPosSubj = BehaviorSubject(PositionConst.zero)
+    jmeCamera.foreach { cam =>
+        val loc = cam.getLocation()
+        PositionConst(loc.getX.pos, loc.getY.pos, loc.getZ.pos)
+    }
 
-    abstract override def update(tpf: Float) {
-        super.update(tpf)
-        jmeCamera.foreach { cam =>
+    lazy val cameraPosition = updates.map { _ =>
+        jmeCamera.map { cam =>
             val loc = cam.getLocation()
             PositionConst(loc.getX.pos, loc.getY.pos, loc.getZ.pos)
         }
-    }
-
-    lazy val cameraPosition = camPosSubj
+    }.removeFuture
 }

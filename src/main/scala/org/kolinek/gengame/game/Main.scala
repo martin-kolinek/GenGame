@@ -9,7 +9,7 @@ import org.kolinek.gengame.game.menu.GuiAppState
 import org.kolinek.gengame.main.MainAppState
 import com.jme3.app.StatsAppState
 
-class Game extends SimpleApplication(new MainAppState, new DebugKeysAppState, new StatsAppState) {
+class Game extends SimpleApplication(new MainAppState, new DebugKeysAppState) {
 
     val isOnUpdateLoopVar = new ThreadLocal[Boolean]
 

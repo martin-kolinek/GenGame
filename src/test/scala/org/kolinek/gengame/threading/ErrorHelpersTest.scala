@@ -34,7 +34,7 @@ class ErrorHelpersTest extends FunSuite {
             f.foreach(x => ())
         }
 
-        //assert(comp.errorLogger.err.isDefined)
+        assert(comp.errorLogger.err.isDefined)
     }
 
     test("Observable foreach works") {

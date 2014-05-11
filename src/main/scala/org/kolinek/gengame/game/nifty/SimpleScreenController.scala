@@ -15,7 +15,8 @@ trait SimpleScreenController
         extends ScreenController
         with SimpleNiftyControlComponent
         with TextFieldComponent
-        with ButtonComponent {
+        with ButtonComponent
+        with LabelComponent {
     private var niftyVar: Nifty = null
     def nifty = niftyVar
 
@@ -49,7 +50,7 @@ trait SimpleScreenController
 
     def controls: Seq[SimpleNiftyControl]
 
-    def setup() = {}
+    def setup(): Unit
 
     final def onStartScreen() = {
         for {
