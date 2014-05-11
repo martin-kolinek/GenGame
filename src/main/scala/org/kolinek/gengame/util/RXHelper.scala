@@ -27,4 +27,8 @@ trait RXHelper {
             obs.filter(func.isDefinedAt).map(func)
         }
     }
+
+    implicit class ObservableInference[T](obs: Observable[T]) {
+        def scanI(f: (T, T) => T) = obs.scan(f)
+    }
 }

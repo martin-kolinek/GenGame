@@ -13,7 +13,8 @@ case class GraphicsConfig(width: Int, height: Int, fullscreen: Boolean) extends 
 
 case class ControlsConfig(forward: Seq[Int], back: Seq[Int],
                           left: Seq[Int], right: Seq[Int],
-                          up: Seq[Int], down: Seq[Int]) extends ConvertableToMap
+                          up: Seq[Int], down: Seq[Int],
+                          rotleft: Seq[Int], rotright: Seq[Int]) extends ConvertableToMap
 
 object Lenses {
     val allConfigLens = new Lens[Config, AllConfig] {

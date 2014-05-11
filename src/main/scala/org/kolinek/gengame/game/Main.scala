@@ -6,11 +6,19 @@ import com.jme3.system.AppSettings
 import com.jme3.niftygui.NiftyJmeDisplay
 import com.jme3.app.DebugKeysAppState
 import org.kolinek.gengame.game.menu.GuiAppState
+import org.kolinek.gengame.main.MainAppState
+import com.jme3.app.StatsAppState
 
-class Game extends SimpleApplication(new GuiAppState, new DebugKeysAppState) {
+class Game extends SimpleApplication(new MainAppState, new DebugKeysAppState, new StatsAppState) {
+
+    val isOnUpdateLoopVar = new ThreadLocal[Boolean]
+
+    def isOnUpdateLoop = {
+        isOnUpdateLoopVar.get
+    }
 
     def simpleInitApp(): Unit = {
-        
+        isOnUpdateLoopVar.set(true)
     }
 }
 

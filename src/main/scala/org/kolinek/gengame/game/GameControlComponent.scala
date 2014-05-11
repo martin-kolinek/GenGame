@@ -1,16 +1,9 @@
 package org.kolinek.gengame.game
 
-import com.jme3.app.Application
 import org.kolinek.gengame.game.menu.GuiAppState
-import com.jme3.app.FlyCamAppState
-import com.jme3.app.DebugKeysAppState
-import com.jme3.scene.shape.Box
-import com.jme3.scene.Geometry
-import com.jme3.material.Material
-import com.jme3.math.ColorRGBA
-import com.jme3.app.SimpleApplication
-import com.jme3.app.StatsAppState
 import org.kolinek.gengame.threading.BoundFuture
+import com.jme3.app.{ FlyCamAppState, StatsAppState }
+import org.kolinek.gengame.main.MainAppState
 
 trait GameControl {
     def quitGame(): Unit
@@ -26,8 +19,7 @@ class AppGameControl(app: Game) extends GameControl {
     def startGame() = {
         val state = app.getStateManager.getState(classOf[GuiAppState])
         app.getStateManager.detach(state)
-        app.getStateManager.attachAll(new FlyCamAppState, new StatsAppState)
-        
+        app.getStateManager.attachAll(new MainAppState, new StatsAppState)
     }
 }
 

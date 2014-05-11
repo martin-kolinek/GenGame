@@ -1,12 +1,10 @@
 package org.kolinek.gengame.game
 
-import com.jme3.app.Application
-import com.jme3.app.SimpleApplication
-import org.kolinek.gengame.threading.BoundFuture
-import org.kolinek.gengame.threading.GameExecutionContextComponent
-import com.jme3.scene.Node
+import org.kolinek.gengame.threading.{ BoundFuture, GameExecutionContextComponent }
 import com.jme3.asset.AssetManager
 import com.jme3.input.InputManager
+import com.jme3.scene.Node
+import com.jme3.renderer.Camera
 
 trait UnsafeAppProvider {
     def unsafeApp: Game
@@ -23,10 +21,10 @@ trait DefaultAppProvider extends AppProvider {
 }
 
 trait SceneGraphProvider {
-    def sceneGraphaphRoot: BoundFuture[Node]
+    def sceneGraphRoot: BoundFuture[Node]
 }
 
-trait DefaultSceneGraphProvider {
+trait DefaultSceneGraphProvider extends SceneGraphProvider {
     self: AppProvider =>
 
     def sceneGraphRoot = app.map(_.getRootNode)
@@ -36,7 +34,7 @@ trait AssetManagerProvider {
     def assetManager: BoundFuture[AssetManager]
 }
 
-trait DefaultAssetManager {
+trait DefaultAssetManager extends AssetManagerProvider {
     self: AppProvider =>
 
     def assetManager = app.map(_.getAssetManager)
@@ -46,8 +44,18 @@ trait InputManagerProvider {
     def inputManager: BoundFuture[InputManager]
 }
 
-trait DefaultInputManagerProvider {
+trait DefaultInputManagerProvider extends InputManagerProvider {
     self: AppProvider =>
 
     def inputManager = app.map(_.getInputManager)
+}
+
+trait JmeCameraComponent {
+    def jmeCamera: BoundFuture[Camera]
+}
+
+trait DefaultJmeCameraComponent extends JmeCameraComponent {
+    self: AppProvider =>
+
+    def jmeCamera = app.map(_.getCamera())
 }

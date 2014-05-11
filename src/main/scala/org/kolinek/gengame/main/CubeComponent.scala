@@ -14,11 +14,12 @@ trait CubeComponent extends ErrorHelpers {
     self: SceneGraphProvider with ErrorLoggingComponent with AssetManagerProvider =>
 
     for {
-        root <- sceneGraphaphRoot
+        root <- sceneGraphRoot
         assets <- assetManager
     } {
         val b = new Box(1, 1, 1)
         val geom = new Geometry("Box", b)
+        geom.setLocalTranslation(0, 0, -10)
         val mat = new Material(assets, "Common/MatDefs/Misc/Unshaded.j3md")
         mat.setColor("Color", ColorRGBA.Blue)
         geom.setMaterial(mat)

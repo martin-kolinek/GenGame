@@ -16,9 +16,13 @@ trait GameExecutionContextComponent {
 
 class JmeExecutionContext(app: Game) extends ExecutionContext {
     def execute(runnable: Runnable) = {
-        app.enqueue(new Callable[Unit] {
-            def call() = runnable.run()
-        })
+        if (app.isOnUpdateLoop)
+            runnable.run()
+        else {
+            app.enqueue(new Callable[Unit] {
+                def call() = runnable.run()
+            })
+        }
     }
 
     def reportFailure(cause: Throwable) = cause.printStackTrace()
