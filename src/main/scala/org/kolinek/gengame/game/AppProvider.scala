@@ -1,27 +1,28 @@
 package org.kolinek.gengame.game
 
-import org.kolinek.gengame.threading.{ BoundFuture, GameExecutionContextComponent }
+import org.kolinek.gengame.threading.{ GameExecutionContextComponent }
 import com.jme3.asset.AssetManager
 import com.jme3.input.InputManager
 import com.jme3.scene.Node
 import com.jme3.renderer.Camera
+import rx.lang.scala.Observable
 
 trait UnsafeAppProvider {
     def unsafeApp: Game
 }
 
 trait AppProvider {
-    def app: BoundFuture[Game]
+    def app: Observable[Game]
 }
 
 trait DefaultAppProvider extends AppProvider {
     self: UnsafeAppProvider with GameExecutionContextComponent =>
 
-    def app = BoundFuture(gameExecutionContext)(unsafeApp)
+    def app = Observable.items(unsafeApp).subscribeOn(gameScheduler).observeOn(gameScheduler)
 }
 
 trait SceneGraphProvider {
-    def sceneGraphRoot: BoundFuture[Node]
+    def sceneGraphRoot: Observable[Node]
 }
 
 trait DefaultSceneGraphProvider extends SceneGraphProvider {
@@ -31,7 +32,7 @@ trait DefaultSceneGraphProvider extends SceneGraphProvider {
 }
 
 trait AssetManagerProvider {
-    def assetManager: BoundFuture[AssetManager]
+    def assetManager: Observable[AssetManager]
 }
 
 trait DefaultAssetManager extends AssetManagerProvider {
@@ -41,7 +42,7 @@ trait DefaultAssetManager extends AssetManagerProvider {
 }
 
 trait InputManagerProvider {
-    def inputManager: BoundFuture[InputManager]
+    def inputManager: Observable[InputManager]
 }
 
 trait DefaultInputManagerProvider extends InputManagerProvider {
@@ -51,7 +52,7 @@ trait DefaultInputManagerProvider extends InputManagerProvider {
 }
 
 trait JmeCameraComponent {
-    def jmeCamera: BoundFuture[Camera]
+    def jmeCamera: Observable[Camera]
 }
 
 trait DefaultJmeCameraComponent extends JmeCameraComponent {

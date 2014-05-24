@@ -25,34 +25,12 @@ class CurrentThreadExecContext extends ExecutionContext {
 
 class ErrorHelpersTest extends FunSuite {
     val curThread = new CurrentThreadExecContext
-    test("BoundFuture foreach works") {
-        val comp = new TestErrorLoggingComponent with ErrorHelpers {
-            val f = BoundFuture[Int](curThread) {
-                throw new Exception
-                1
-            }
-            f.foreach(x => ())
-        }
-
-        assert(comp.errorLogger.err.isDefined)
-    }
 
     test("Observable foreach works") {
         val comp = new TestErrorLoggingComponent with ErrorHelpers {
             val subj = Subject[Int]
             subj.foreach(x => ())
             subj.onError(new Exception)
-        }
-
-        assert(comp.errorLogger.err.isDefined)
-    }
-
-    test("BoundFuture foreach works when error is thrown in foreach") {
-        val comp = new TestErrorLoggingComponent with ErrorHelpers {
-            val f = BoundFuture[Int](curThread)(1)
-            f.foreach {
-                x => throw new Exception
-            }
         }
 
         assert(comp.errorLogger.err.isDefined)

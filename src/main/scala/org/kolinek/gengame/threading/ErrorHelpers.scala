@@ -12,15 +12,4 @@ trait ErrorHelpers {
     implicit class ObservableErrorOps[T](obs: Observable[T]) {
         def foreach(f: T => Unit) = obs.subscribe(f, errorLogger.logError _)
     }
-
-    implicit class BoundFutureErrorOps[T](fut: BoundFuture[T]) {
-        def foreach(f: T => Unit) = fut.onComplete {
-            case Success(x) => try {
-                f(x)
-            } catch {
-                case thr: Throwable => errorLogger.logError(thr)
-            }
-            case Failure(thr) => errorLogger.logError(thr)
-        }
-    }
 }

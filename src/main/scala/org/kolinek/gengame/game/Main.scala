@@ -8,10 +8,11 @@ import com.jme3.app.DebugKeysAppState
 import org.kolinek.gengame.game.menu.GuiAppState
 import org.kolinek.gengame.main.MainAppState
 import com.jme3.app.StatsAppState
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
-class Game extends SimpleApplication(new MainAppState, new DebugKeysAppState) {
+class Game extends SimpleApplication(new MainAppState, new DebugKeysAppState) with LazyLogging {
 
-    val isOnUpdateLoopVar = new ThreadLocal[Boolean]
+    private val isOnUpdateLoopVar = new ThreadLocal[Boolean]
 
     def isOnUpdateLoop = {
         isOnUpdateLoopVar.get
@@ -19,6 +20,7 @@ class Game extends SimpleApplication(new MainAppState, new DebugKeysAppState) {
 
     def simpleInitApp(): Unit = {
         isOnUpdateLoopVar.set(true)
+        logger.info(s"Main thread: ${Thread.currentThread().getId()}")
     }
 }
 

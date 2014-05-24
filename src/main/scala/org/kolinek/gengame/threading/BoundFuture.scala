@@ -7,7 +7,7 @@ import rx.lang.scala.Observable
 import org.kolinek.gengame.util.ObservableFuture
 import org.kolinek.gengame.util.IsFuture
 
-class BoundFuture[T] private (underlying: Future[T], ec: ExecutionContext) {
+/*class BoundFuture[T] private (underlying: Future[T], ec: ExecutionContext) {
     private implicit val ctx = ec
 
     def map[R](f: T => R) = {
@@ -36,4 +36,4 @@ trait BoundFutureImplicits {
             f.onComplete(func)
         }
     }
-}
+}*/

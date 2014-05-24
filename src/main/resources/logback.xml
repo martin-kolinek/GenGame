@@ -31,7 +31,6 @@
 	
 	<root level="info">
 		<appender-ref ref="Console" />		
-		<appender-ref ref="ErrConsole" />
 		<appender-ref ref="File" />
 	</root>
 	<logger name="org.kolinek.gengame" level="info" >

@@ -1,9 +1,9 @@
 package org.kolinek.gengame.game
 
 import org.kolinek.gengame.game.menu.GuiAppState
-import org.kolinek.gengame.threading.BoundFuture
 import com.jme3.app.{ FlyCamAppState, StatsAppState }
 import org.kolinek.gengame.main.MainAppState
+import rx.lang.scala.Observable
 
 trait GameControl {
     def quitGame(): Unit
@@ -11,7 +11,7 @@ trait GameControl {
 }
 
 trait GameControlComponent {
-    def gameControl: BoundFuture[GameControl]
+    def gameControl: Observable[GameControl]
 }
 
 class AppGameControl(app: Game) extends GameControl {

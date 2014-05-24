@@ -23,10 +23,11 @@ trait DefaultCameraPosition extends CameraPositionComponent with ErrorHelpers {
         PositionConst(loc.getX.pos, loc.getY.pos, loc.getZ.pos)
     }
 
-    lazy val cameraPosition = updates.map { _ =>
-        jmeCamera.map { cam =>
-            val loc = cam.getLocation()
-            PositionConst(loc.getX.pos, loc.getY.pos, loc.getZ.pos)
-        }
-    }.removeFuture
+    lazy val cameraPosition = for {
+        _ <- updates
+        cam <- jmeCamera
+    } yield {
+        val loc = cam.getLocation()
+        PositionConst(loc.getX.pos, loc.getY.pos, loc.getZ.pos)
+    }
 }

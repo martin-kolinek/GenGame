@@ -9,11 +9,12 @@ import org.kolinek.gengame.game.AppProvider
 trait GameNiftyProvider extends NiftyProvider with Closeable with ErrorHelpers {
     self: AppProvider with ErrorLoggingComponent =>
 
-    lazy val niftyDisplay = for (a <- app) yield {
+    lazy val niftyDisplay = (for (a <- app) yield {
+        val str = Thread.currentThread().getStackTrace().map(_.toString()).mkString("\n")
         val disp = new NiftyJmeDisplay(a.getAssetManager(), a.getInputManager(), a.getAudioRenderer(), a.getGuiViewPort())
         a.getGuiViewPort.addProcessor(disp)
         disp
-    }
+    }).cache
 
     lazy val nifty = niftyDisplay.map(_.getNifty)
 

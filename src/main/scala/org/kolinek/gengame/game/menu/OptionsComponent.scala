@@ -2,7 +2,6 @@ package org.kolinek.gengame.game.menu
 
 import org.kolinek.gengame.game.nifty.SimpleScreenController
 import org.kolinek.gengame.config.GraphicsConfigProvider
-import org.kolinek.gengame.threading.GameExecutionHelper
 import org.kolinek.gengame.threading.GameExecutionContextComponent
 import de.lessvoid.nifty.screen.Screen
 import de.lessvoid.nifty.controls.TextField
@@ -30,7 +29,7 @@ import org.kolinek.gengame.config.Lenses
 import org.kolinek.gengame.threading.ErrorHelpers
 import org.kolinek.gengame.reporting.ErrorLoggingComponent
 
-trait OptionsComponent extends GameExecutionHelper with ErrorHelpers {
+trait OptionsComponent extends ErrorHelpers {
     self: MenuComponent with GraphicsConfigProvider with GameExecutionContextComponent with ConfigUpdaterComponent with ConfigProvider with ErrorLoggingComponent =>
 
     class OptionsController extends SimpleScreenController with LazyLogging {
@@ -45,7 +44,7 @@ trait OptionsComponent extends GameExecutionHelper with ErrorHelpers {
 
         override def setup(): Unit = {
 
-            graphicsConfig.subscribeOnUpdateLoop { conf =>
+            graphicsConfig.observeOn(gameScheduler).foreach { conf =>
                 widthTf.setText(conf.width.toString)
                 heightTf.setText(conf.height.toString)
             }
@@ -56,7 +55,7 @@ trait OptionsComponent extends GameExecutionHelper with ErrorHelpers {
                 .map(tupleFlatten)
                 .map(sequence(_).map(GraphicsConfig.tupled))
 
-            optionGraphicsConfig.map(_.isDefined).subscribeOnUpdateLoop(applyButton.setEnabled)
+            optionGraphicsConfig.map(_.isDefined).observeOn(gameScheduler).foreach(applyButton.setEnabled)
 
             val graphConf = optionGraphicsConfig.collectPartFunc {
                 case Some(c) => c

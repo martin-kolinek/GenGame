@@ -3,11 +3,10 @@ package org.kolinek.gengame.main
 import org.kolinek.gengame.threading.ErrorHelpers
 import org.kolinek.gengame.reporting.ErrorLoggingComponent
 import org.kolinek.gengame.game.nifty.SimpleScreenController
-import org.kolinek.gengame.threading.GameExecutionHelper
 import org.kolinek.gengame.threading.GameExecutionContextComponent
 import org.kolinek.gengame.reporting.FPSCounterComponent
 
-trait HudComponent extends ErrorHelpers with GameExecutionHelper {
+trait HudComponent extends ErrorHelpers {
     self: ErrorLoggingComponent with CameraPositionComponent with GameExecutionContextComponent with FPSCounterComponent =>
 
     class HudController extends SimpleScreenController {
@@ -19,7 +18,8 @@ trait HudComponent extends ErrorHelpers with GameExecutionHelper {
         def setup() {
             cameraPosition
                 .map(p => f"X:${p.x.underlying}%.3f Y:${p.y.underlying}%.3f Z:${p.z.underlying}%.3f")
-                .subscribeOnUpdateLoop(positionLabel.setText)
+                .observeOn(gameScheduler)
+                .foreach(positionLabel.setText)
 
             fps.map(fps => s"FPS: $fps")
                 .foreach(fpsLabel.setText)

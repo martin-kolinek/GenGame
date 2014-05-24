@@ -7,10 +7,10 @@ import org.kolinek.gengame.config.ConfigProvider
 import org.kolinek.gengame.config.GraphicsConfigProvider
 import org.kolinek.gengame.threading.GameExecutionContextComponent
 import de.lessvoid.nifty.Nifty
-import org.kolinek.gengame.threading.BoundFuture
 import org.kolinek.gengame.config.ConfigUpdaterComponent
 import org.kolinek.gengame.threading.ErrorHelpers
 import org.kolinek.gengame.reporting.ErrorLoggingComponent
+import rx.lang.scala.Observable
 
 trait Menu {
     def gotoMainMenu()
@@ -19,7 +19,7 @@ trait Menu {
 }
 
 trait MenuComponent {
-    def menu: BoundFuture[Menu]
+    def menu: Observable[Menu]
 }
 
 trait GameMenuComponent extends MenuComponent with MainMenuComponent with StartMenuComponent with OptionsComponent with ErrorHelpers {
