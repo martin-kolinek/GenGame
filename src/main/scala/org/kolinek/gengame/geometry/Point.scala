@@ -2,7 +2,9 @@ package org.kolinek.gengame.geometry
 
 import spire.algebra._
 
-case class Point[T](x: T, y: T, z: T)
+case class Point[T](x: T, y: T, z: T) {
+    def map[R](f: T => R) = Point(f(x), f(y), f(z))
+}
 
 trait PointModuleInstance {
     class PointIsModule[T](implicit ev: Ring[T]) extends Module[Point[T], T] {
