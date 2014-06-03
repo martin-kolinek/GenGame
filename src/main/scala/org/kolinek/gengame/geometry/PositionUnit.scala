@@ -38,8 +38,8 @@ trait PositionUnitImplicits {
     }
 }
 
-object PositionConst extends ((PositionUnit, PositionUnit, PositionUnit) => Point[PositionUnit]) {
+object Position extends ((PositionUnit, PositionUnit, PositionUnit) => Point[PositionUnit]) {
     def apply(x: PositionUnit, y: PositionUnit, z: PositionUnit) = Point(x, y, z)
-    
+
     def zero = Point(0.pos, 0.pos, 0.pos)
 }

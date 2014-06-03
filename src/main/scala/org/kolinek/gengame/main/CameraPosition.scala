@@ -20,7 +20,7 @@ trait DefaultCameraPosition extends CameraPositionComponent with ErrorHelpers {
 
     jmeCamera.foreach { cam =>
         val loc = cam.getLocation()
-        PositionConst(loc.getX.pos, loc.getY.pos, loc.getZ.pos)
+        Position(loc.getX.pos, loc.getY.pos, loc.getZ.pos)
     }
 
     lazy val cameraPosition = for {
@@ -28,6 +28,6 @@ trait DefaultCameraPosition extends CameraPositionComponent with ErrorHelpers {
         cam <- jmeCamera
     } yield {
         val loc = cam.getLocation()
-        PositionConst(loc.getX.pos, loc.getY.pos, loc.getZ.pos)
+        Position(loc.getX.pos, loc.getY.pos, loc.getZ.pos)
     }
 }

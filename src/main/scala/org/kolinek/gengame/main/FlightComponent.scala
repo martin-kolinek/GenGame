@@ -39,14 +39,14 @@ trait DefaultFlightComponent extends FlightComponent {
             combineLatest axis(rotateleft, rotateright))
             .map(tupleFlatten)
             .map {
-                case (lr, ud, fb, roll) => PositionConst(lr, ud, fb) -> roll
+                case (lr, ud, fb, roll) => Position(lr, ud, fb) -> roll
             }
 
         val trans = updates.withLatest(multipliers).map {
             case (tpf, (mult, roll)) => CameraStep((5.pos * tpf.pos) *: mult, 0, 0, roll.underlying.toFloat * 0.01f)
         }
         val rot = mouse.map {
-            case (x, y) => CameraStep(PositionConst.zero, x, y, 0)
+            case (x, y) => CameraStep(Position.zero, x, y, 0)
         }
         trans merge rot
     }
