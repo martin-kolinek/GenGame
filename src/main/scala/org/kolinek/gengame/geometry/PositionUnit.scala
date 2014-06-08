@@ -42,4 +42,6 @@ object Position extends ((PositionUnit, PositionUnit, PositionUnit) => Point[Pos
     def apply(x: PositionUnit, y: PositionUnit, z: PositionUnit) = Point(x, y, z)
 
     def zero = Point(0.pos, 0.pos, 0.pos)
+
+    def unit = Point(1.pos, 1.pos, 1.pos)
 }

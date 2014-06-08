@@ -4,7 +4,11 @@ package object geometry
         extends PointNormedVectorSpaceInstance
         with PositionUnitImplicits
         with CubeImplicits
-        with IntegralRange {
+        with IntegralRange
+        with ChunkImplicits
+        with HasBoundsImplicits {
     type Position = Point[PositionUnit]
     type SingleCube = Point[CubeUnit]
+    type Chunk = Point[ChunkUnit]
+    type BBoxPosition = BoundingBox[PositionUnit]
 }

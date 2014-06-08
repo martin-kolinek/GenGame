@@ -4,6 +4,18 @@ import spire.algebra._
 
 case class Point[T](x: T, y: T, z: T) {
     def map[R](f: T => R) = Point(f(x), f(y), f(z))
+    def foldLeft[R](r: R)(f: (R, T) => R) = f(f(f(r, x), y), z)
+    def forall(f: T => Boolean) = foldLeft(true)(_ && f(_))
+    def zip[R](o: Point[R]) = Point(x -> o.x, y -> o.y, z -> o.z)
+    def toList = List(x, y, z)
+    def reduce(f: (T, T) => T) = f(f(x, y), z)
+}
+
+object Point {
+    def fromList[T](l: List[T]) = l match {
+        case x :: y :: z :: Nil => Point(x, y, z)
+        case _ => throw new AssertionError
+    }
 }
 
 trait PointModuleInstance {
