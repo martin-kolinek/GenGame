@@ -29,7 +29,7 @@ class BasicMeshProcessor(val maxSize: ChunkUnit, maxDegrees: Double) extends Mes
         val tris = ta.getTrisIn(bbx)
         val patches = generatePatches(ta, tris.toList, Nil)
         val terrainPieces = patches.map(_.toTerrainPiece)
-        (terrainPieces, patches.flatMap(_.tris).toSet.toSeq)
+        (terrainPieces, patches.flatMap(_.tris).distinct)
     }
 
     class PatchInfo(min: Position, max: Position, val normal: Position) {

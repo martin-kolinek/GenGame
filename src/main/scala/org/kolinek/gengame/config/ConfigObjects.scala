@@ -2,10 +2,11 @@ package org.kolinek.gengame.config
 
 import shapeless.Lens
 import com.typesafe.config.Config
-import net.ceedubs.ficus.FicusConfig._
+import net.ceedubs.ficus.Ficus._
 import com.typesafe.config.ConfigValueFactory
 import scala.collection.JavaConversions._
 import com.jme3.system.AppSettings
+import net.ceedubs.ficus.readers.ArbitraryTypeReader._
 
 case class AllConfig(graphics: GraphicsConfig, controls: ControlsConfig) extends ConvertableToMap
 
