@@ -16,9 +16,9 @@ trait DefaultVisitedChunksProvider extends VisitedChunksProvider {
 trait VisitedChunksAroundOrigin extends VisitedChunksProvider {
     lazy val visitedChunks = {
         val chunks = for {
-            x <- -5.chunk to 5.chunk
-            y <- -5.chunk to 5.chunk
-            z <- -5.chunk to 5.chunk
+            x <- -1.chunk to 1.chunk
+            y <- -1.chunk to 1.chunk
+            z <- -1.chunk to 1.chunk
         } yield Point(x, y, z)
         Observable.items(chunks: _*)
     }
