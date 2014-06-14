@@ -3,6 +3,7 @@ package org.kolinek.gengame.terragen.marchingcubes
 import org.kolinek.gengame.geometry._
 import spire.syntax.all._
 import org.kolinek.gengame.terragen.TerragenDefinition
+import org.kolinek.gengame.terragen.TerragenDefinitionProvider
 
 class MarchingCubesComputer(defin: TerragenDefinition) {
     private val marchCubes = MarchCubeCases.getAllMarchingCubeCases
@@ -17,17 +18,26 @@ class MarchingCubesComputer(defin: TerragenDefinition) {
             goodSet = goodPoints.toSet
             triangles = marchCubes(goodSet)
             (a, b, c) <- triangles
-        } yield (edgePt(pt, a) -> edges.getPoint(pt, a),
-            edgePt(pt, b) -> edges.getPoint(pt, b),
-            edgePt(pt, c) -> edges.getPoint(pt, c))
-        val allPts = (for ((a, b, c) <- tris) yield Seq(a, b, c)).flatten.toSet.toIndexedSeq
+        } yield (edges.getPoint(pt, a),
+            edges.getPoint(pt, b),
+            edges.getPoint(pt, c))
+        val allPts = (for ((a, b, c) <- tris) yield Seq(a, b, c)).flatten.distinct.toIndexedSeq
         val indMap = allPts.zipWithIndex.toMap
         val indexes = for ((a, b, c) <- tris)
             yield (indMap(a), indMap(b), indMap(c))
-        ComputedChunk(chunk, allPts, indexes)
+        new ComputedChunk(chunk, allPts, indexes.map(Triangle.tupled))
     }
 
     private def makeNormalizedFunc(origin: SingleCube, func: SingleCube => Double): SingleCube => Double = {
         return x => func(x + origin)
     }
+}
+
+trait MarchingCubesComputerProvider {
+    def marchingCubesComputer: MarchingCubesComputer
+}
+
+trait DefaultMarchingCubesComputerProvider extends MarchingCubesComputerProvider {
+    self: TerragenDefinitionProvider =>
+    lazy val marchingCubesComputer = new MarchingCubesComputer(terragenDefinition)
 }

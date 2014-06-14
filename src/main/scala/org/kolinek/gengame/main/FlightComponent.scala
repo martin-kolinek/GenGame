@@ -85,4 +85,10 @@ trait JmeFlightComponent extends ErrorHelpers {
     inputManager.foreach { inp =>
         inp.setCursorVisible(false)
     }
-} 
+}
+
+trait FlightModule
+        extends DefaultFlightComponent
+        with JmeFlightComponent {
+    self: UpdateComponent with ControlsComponent with JmeCameraComponent with ErrorLoggingComponent with InputManagerProvider =>
+}

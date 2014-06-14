@@ -1,5 +1,4 @@
 <configuration>
-	
 	<appender name="File" class="ch.qos.logback.core.FileAppender">
 		<file>run.log</file>
 		<append>false</append>

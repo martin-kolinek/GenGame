@@ -14,6 +14,7 @@ import com.jme3.input.controls.MouseAxisTrigger
 import java.awt.MouseInfo
 import com.jme3.input.MouseInput
 import com.jme3.input.controls.AnalogListener
+import org.kolinek.gengame.config.ConfigProvider
 
 trait ControlsComponent {
     def forward: Observable[Boolean]
@@ -90,4 +91,9 @@ trait DefaultControlsComponent extends ControlsComponent with ErrorHelpers {
     lazy val down = createKeyBinding(controlsConfig.map(_.down))
     lazy val rotateleft = createKeyBinding(controlsConfig.map(_.rotleft))
     lazy val rotateright = createKeyBinding(controlsConfig.map(_.rotright))
+}
+
+trait ControlsModule
+        extends DefaultControlsComponent {
+    self: ControlsConfigProvider with InputManagerProvider with ErrorLoggingComponent =>
 }

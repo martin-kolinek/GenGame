@@ -16,30 +16,21 @@ import org.kolinek.gengame.game.DefaultAssetManager
 import org.kolinek.gengame.game.DefaultSceneGraphProvider
 import org.kolinek.gengame.game.nifty.GameNiftyProvider
 import org.kolinek.gengame.reporting.DefaultFPSCounterComponent
+import org.kolinek.gengame.lighting.LightingProvider
+import org.kolinek.gengame.game.BasicModule
+import org.kolinek.gengame.config.ConfigModule
 
 class MainAppState extends SimpleAppState {
     class Component
         extends Closeable
-        with DefaultUpdateComponent
-        with JmeFlightComponent
-        with DefaultFlightComponent
         with GameAppProvider
-        with DefaultAppProvider
-        with DefaultJmeCameraComponent
-        with JmeExecutionComponent
-        with DefaultErrorLoggingComponent
-        with DefaultControlsComponent
-        with DefaultControlsConfigProvider
-        with DefaultInputManagerProvider
-        with DefaultConfigProvider
-        with DefaultConfigSaver
-        with CubeComponent
-        with DefaultAssetManager
-        with DefaultSceneGraphProvider
-        with MainNiftyComponent
-        with GameNiftyProvider
-        with DefaultFPSCounterComponent
-        with DefaultCameraPosition
+        with BasicModule
+        with FlightModule
+        with ConfigModule
+        with ControlsModule
+        with MainNiftyModule
+        with TerrainGenerationModule
+        with LightingProvider
 
     def component = new Component
 }

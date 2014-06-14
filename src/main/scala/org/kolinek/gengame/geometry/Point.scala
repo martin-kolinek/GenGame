@@ -1,6 +1,9 @@
 package org.kolinek.gengame.geometry
 
 import spire.algebra._
+import spire.math.ConvertableFrom
+import com.jme3.math.Vector3f
+import spire.syntax.all._
 
 case class Point[T](x: T, y: T, z: T) {
     def map[R](f: T => R) = Point(f(x), f(y), f(z))
@@ -49,4 +52,10 @@ trait PointVectorSpaceInstance extends PointModuleInstance {
 
 trait PointNormedVectorSpaceInstance extends PointVectorSpaceInstance {
     implicit def pointIsNormedVectorSpace[T: Field: NRoot]: NormedVectorSpace[Point[T], T] = pointIsInnerProductSpace[T].normed
+}
+
+trait PointImplicits {
+    implicit class PointJmeOps[T: ConvertableFrom](pt: Point[T]) {
+        def toVector3f = new Vector3f(pt.x.toFloat, pt.y.toFloat, pt.z.toFloat)
+    }
 }

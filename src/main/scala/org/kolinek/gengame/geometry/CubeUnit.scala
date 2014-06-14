@@ -13,6 +13,7 @@ trait CubeImplicits {
     implicit val cubeUnitHasBounds = new HasBounds[CubeUnit, PositionUnit] {
         def upper(c: CubeUnit) = (c.underlying + 1).pos
         def lower(c: CubeUnit) = c.underlying.pos
+        def bound(p: PositionUnit) = p.underlying.toLong.cube
     }
 
     implicit class CubeUnitFromLong(l: Long) {

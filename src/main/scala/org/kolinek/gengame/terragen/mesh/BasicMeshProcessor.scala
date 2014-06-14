@@ -6,30 +6,31 @@ import scala.collection.mutable.Queue
 import scala.collection.mutable.HashSet
 import spire.compat._
 import spire.syntax.all._
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
-class BasicMeshProcessor(val maxSize: ChunkUnit, maxDegrees: Double) extends MeshProcessor {
+class BasicMeshProcessor(val maxSize: ChunkUnit, maxDegrees: Double) extends MeshProcessor with LazyLogging {
     private val maxCosine = math.cos(math.toRadians(maxDegrees))
     private val maxPosSize = maxSize.upper.upper
 
     @tailrec
-    private def generatePatches(ta: TriangleArea, tris: List[Triangle], acc: List[TrianglePatch]): List[TrianglePatch] = {
-        tris match {
-            case Nil => acc
-            case tri :: rest => {
-                val ptch = createPatch(ta, tri)
-                ptch match {
-                    case None => generatePatches(ta, rest, acc)
-                    case Some(ptch) => generatePatches(ta.withFinished(ptch), rest, ptch :: acc)
-                }
-            }
+    private def generatePatches(ta: TriangleArea, acc: List[TrianglePatch]): List[TrianglePatch] = {
+        logger.debug(s"Remaining TriangleArea size: ${ta.tris.size}")
+        if (ta.empty)
+            acc
+        else {
+            val ptch = createPatch(ta, ta.tris.head)
+            logger.debug(s"Found patch size ${ptch.tris.size}")
+            generatePatches(ta.withFinished(ptch.tris), ptch :: acc)
         }
     }
 
-    def apply(ta: TriangleArea, bbx: BBoxPosition) = {
-        val tris = ta.getTrisIn(bbx)
-        val patches = generatePatches(ta, tris.toList, Nil)
+    def apply(ta: TriangleArea) = {
+        logger.debug("Generating patches")
+        val patches = generatePatches(ta, Nil)
+        logger.debug("Creating terrain pieces")
         val terrainPieces = patches.map(_.toTerrainPiece)
-        (terrainPieces, patches.flatMap(_.tris).distinct)
+        logger.debug("Terrain pieces done")
+        terrainPieces
     }
 
     class PatchInfo(min: Position, max: Position, val normal: Position) {
@@ -58,38 +59,33 @@ class BasicMeshProcessor(val maxSize: ChunkUnit, maxDegrees: Double) extends Mes
 
     def initPatchInfo(a: Position, b: Position, c: Position) = new PatchInfo(a, a, NormalCalculator.normalForTri(a, b, c))
 
-    def createPatch(area: TriangleArea, start: Triangle): Option[TrianglePatch] = {
-        if (area.finished.contains(start))
-            None
-        else {
-            val queue = new Queue[Triangle]
-            val positioned = area.positionTri(start)
-            val closed = new HashSet[Triangle]
-            var info = (initPatchInfo _).tupled(positioned)
-            var ret: List[Triangle] = Nil
-            queue.enqueue(start)
-            while (!queue.isEmpty) {
-                val next = queue.dequeue
-                if (!closed.contains(next)) {
-                    closed.add(next)
-                    val nextpos = area.positionTri(next)
-                    val nextNormal = (NormalCalculator.normalForTri _).tupled(nextpos)
-                    val cos = (info.normal dot nextNormal).toDouble
-                    if (cos > maxCosine) {
-                        val ni = (info.addTri _).tupled(nextpos)
-                        if (ni.size < maxPosSize) {
-                            ret = next :: ret
-                            info = ni
-                            val neighs = area.neighbours(next).
-                                filterNot(area.finished).
-                                filterNot(closed.contains).
-                                foreach(queue.enqueue(_))
-                        }
+    def createPatch(area: TriangleArea, start: Triangle): TrianglePatch = {
+        val queue = new Queue[Triangle]
+        val positioned = area.positionTri(start)
+        val closed = new HashSet[Triangle]
+        var info = (initPatchInfo _).tupled(positioned)
+        var ret: List[Triangle] = Nil
+        queue.enqueue(start)
+        while (!queue.isEmpty) {
+            val next = queue.dequeue
+            if (!closed.contains(next)) {
+                closed.add(next)
+                val nextpos = area.positionTri(next)
+                val nextNormal = (NormalCalculator.normalForTri _).tupled(nextpos)
+                val cos = (info.normal dot nextNormal).toDouble
+                if (cos > maxCosine) {
+                    val ni = (info.addTri _).tupled(nextpos)
+                    if (ni.size < maxPosSize) {
+                        ret = next :: ret
+                        info = ni
+                        val neighs = area.neighbours(next).
+                            filterNot(closed.contains).
+                            foreach(queue.enqueue(_))
                     }
                 }
-
             }
-            Some(new TrianglePatch(ret, area))
+
         }
+        new TrianglePatch(ret, area)
     }
 }

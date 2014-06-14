@@ -2,6 +2,7 @@ package org.kolinek.gengame.geometry
 
 import deriving.deriving
 import spire.syntax.integral._
+import spire.math.Integral
 
 class ChunkUnit(val underlying: Long) extends AnyVal {
     override def toString = s"$underlying.chunk"
@@ -13,6 +14,7 @@ trait ChunkImplicits {
     implicit val chunkUnitHasBounds = new HasBounds[ChunkUnit, CubeUnit] {
         def lower(c: ChunkUnit) = (c.underlying.cube * Chunk.chunkSize)
         def upper(c: ChunkUnit) = ((c.underlying + 1).cube * Chunk.chunkSize)
+        def bound(cb: CubeUnit) = (cb.underlying / Chunk.chunkSize.underlying).chunk
     }
 
     implicit class ChunkUnitFromLong(l: Long) {

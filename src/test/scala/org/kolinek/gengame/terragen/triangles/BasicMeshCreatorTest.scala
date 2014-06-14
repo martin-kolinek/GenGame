@@ -27,31 +27,46 @@ class BasicMeshCreatorTest extends FunSuite {
         diffs.max
     }
 
+    val ccoords = for (x <- 1.cube to 20.cube; y <- 1.cube to 20.cube) yield (x, y)
+    val coords = ccoords.map { case (x, y) => Point(x, y, 0.cube).lower }
+    val coordToPt = ccoords.zipWithIndex.map(x => (x._1, x._2.toInt)).toMap
+    val positions: Int => Position = coords.zipWithIndex.map(_.swap).map(x => (x._1.toLong, x._2)).toMap
+    def triangleArea(minX: CubeUnit, maxX: CubeUnit, minY: CubeUnit, maxY: CubeUnit) = {
+        val pairs = for (x <- minX to maxX; y <- minY to maxY)
+            yield List((coordToPt(x, y), coordToPt(x + 1, y), coordToPt(x, y + 1)),
+            (coordToPt(x + 1, y), coordToPt(x + 1, y + 1), coordToPt(x, y + 1)))
+        pairs.flatten.map(Triangle.tupled)
+    }
+
     test("BasicMeshCreator works on flat land") {
-        val ccoords = for (x <- 1.cube to 20.cube; y <- 1.cube to 20.cube) yield (x, y)
-        val coords = ccoords.map { case (x, y) => Point(x, y, 0.cube).lower }
-        val coordToPt = ccoords.zipWithIndex.map(x => (x._1, x._2.toLong)).toMap
-        val positions: Long => Position = coords.zipWithIndex.map(_.swap).map(x => (x._1.toLong, x._2)).toMap
-        def triangleArea(minX: CubeUnit, maxX: CubeUnit, minY: CubeUnit, maxY: CubeUnit) = {
-            val pairs = for (x <- minX to maxX; y <- minY to maxY)
-                yield List((coordToPt(x, y), coordToPt(x + 1, y), coordToPt(x, y + 1)),
-                (coordToPt(x + 1, y), coordToPt(x + 1, y + 1), coordToPt(x, y + 1)))
-            pairs.flatten.map(Triangle.tupled)
-        }
 
         val triangles = triangleArea(1.cube, 19.cube, 1.cube, 19.cube)
-        val area = new TriangleArea(triangles, Set[Triangle](), positions)
+        val area = new TriangleArea(triangles, positions)
         val msh = new BasicMeshProcessor(4.chunk, 40)
-        val pieces = msh(area, BoundingBox(Point(3.0.pos, 3.0.pos, -10.pos), Point(6.0.pos, 6.0.pos, 10.pos)))
-        assert(pieces._1.size > 0)
-        assert(pieces._2.size > 0)
+        val pieces = msh(area)
+        assert(pieces.size > 0)
         val processed = triangleArea(3.cube, 5.cube, 3.cube, 5.cube)
         assert(processed.forall { tri =>
-            pieces._1.exists { piece =>
+            pieces.exists { piece =>
                 pieceContainsTri(piece, area.positionTri(tri))
             }
         })
-        assert(pieces._1.map(pieceSize).max <= 4.chunk.upper.upper)
+        assert(pieces.map(pieceSize).max <= 4.chunk.upper.upper)
 
+    }
+
+    test("BasicMeshCreator does not create many small pieces") {
+        val triangles = triangleArea(1.cube, 19.cube, 1.cube, 19.cube)
+        val area = new TriangleArea(triangles, positions)
+        val msh = new BasicMeshProcessor(4.chunk, 40)
+        val pieces = msh(area)
+        assert(pieces.size == 1)
+        val processed = triangleArea(3.cube, 5.cube, 3.cube, 5.cube)
+        assert(processed.forall { tri =>
+            pieces.exists { piece =>
+                pieceContainsTri(piece, area.positionTri(tri))
+            }
+        })
+        assert(pieces.map(pieceSize).max <= 4.chunk.upper.upper)
     }
 }

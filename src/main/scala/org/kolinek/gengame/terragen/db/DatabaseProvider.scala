@@ -11,7 +11,7 @@ trait InMemoryDatabaseProvider extends DatabaseProvider with TerragenTables {
     val database = {
         val db = Database.forName(":memory:")
         db.withTransaction { implicit s =>
-            (pointsTable.ddl ++ trianglesTable.ddl ++ doneChunksTable.ddl ++ doneMeshChunksTable.ddl ++ meshesTable.ddl).create
+            (doneChunksTable.ddl ++ meshesTable.ddl).create
             Q.updateNA("CREATE INDEX ix_points_pos ON points(direction, posx, posy, posz)").execute
             Q.updateNA("CREATE VIRTUAL TABLE meshbounds USING rtree (meshid int, minx float, maxx float, miny float, maxy float, minz float, maxz float)").execute
             Q.updateNA("CREATE INDEX ix_trianglecubes ON triangles(cubeid)").execute
