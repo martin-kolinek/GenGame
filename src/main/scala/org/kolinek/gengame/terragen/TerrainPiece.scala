@@ -16,7 +16,7 @@ class TerrainPiece(val points: IndexedSeq[Position], val indexes: Seq[Int], val 
     def this(points: IndexedSeq[Position], indexes: Seq[Int]) =
         this(points, indexes, NormalCalculator.createNormals(points, indexes))
 
-    def toJmeGeometry(assetManager: AssetManager) = {
+    def toJmeMesh = {
         val mesh = new Mesh;
         val posBuffer = points.map(x => new Vector3f(x.x.toFloat, x.y.toFloat, x.z.toFloat)).toArray[Vector3f]
         val indexBuffer = indexes.toArray[Int]
@@ -25,7 +25,11 @@ class TerrainPiece(val points: IndexedSeq[Position], val indexes: Seq[Int], val 
         mesh.setBuffer(VertexBuffer.Type.Index, 3, BufferUtils.createIntBuffer(indexBuffer: _*))
         mesh.setBuffer(VertexBuffer.Type.Normal, 3, BufferUtils.createFloatBuffer(normalBuffer: _*))
         mesh.setBound(BoundingBox.fromPoints(points).toJmeBoundingBox)
-        val geom = new Geometry("terrainpiece", mesh)
+        mesh
+    }
+
+    def toJmeGeometry(assetManager: AssetManager) = {
+        val geom = new Geometry("terrainpiece", toJmeMesh)
         val material = new Material(assetManager, "Common/MatDefs/Light/Lighting.j3md");
         material.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off);
         geom.setMaterial(material)

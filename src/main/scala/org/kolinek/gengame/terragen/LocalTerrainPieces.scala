@@ -4,17 +4,17 @@ import rx.lang.scala.Observable
 import org.kolinek.gengame.main.CameraPositionComponent
 import rx.schedulers.Schedulers
 import rx.lang.scala.JavaConversions._
+import org.kolinek.gengame.terragen.db.SavedTerrainPiece
 
 trait LocalTerrainPiecesProvider {
-    def localTerrainPieces: Observable[TerrainPiece]
+    def localTerrainPieces: Observable[SavedTerrainPieceAction]
 }
 
-trait DefaultTerrainPiecesProvider extends LocalTerrainPiecesProvider {
-    self: TerrainGeneratorProvider with VisitedChunksProvider =>
-
-    lazy val localTerrainPieces =
-        for {
-            chunk <- visitedChunks.distinct.observeOn(Schedulers.computation())
-            piece <- Observable.items(terrainGenerator.generateChunk(chunk): _*)
-        } yield piece
+sealed trait SavedTerrainPieceAction {
+    val savedMesh: SavedTerrainPiece
 }
+
+case class LoadTerrainPiece(savedMesh: SavedTerrainPiece) extends SavedTerrainPieceAction
+
+case class UnloadTerrainPiece(savedMesh: SavedTerrainPiece) extends SavedTerrainPieceAction
+

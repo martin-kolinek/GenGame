@@ -13,6 +13,9 @@ trait TerrainAttacherComponent extends ErrorHelpers {
         root <- sceneGraphRoot
         am <- assetManager
     } {
-        root.attachChild(tp.toJmeGeometry(am))
+        tp match {
+            case LoadTerrainPiece(savedMesh) => savedMesh.attach(root)
+            case UnloadTerrainPiece(savedMesh) => savedMesh.detach(root)
+        }
     }
 }

@@ -4,6 +4,8 @@ import slick.driver.SQLiteDriver.simple._
 import org.kolinek.gengame.geometry._
 
 trait TerragenTables extends GeometryMappers {
+    case class DoneChunk(id: Long, x: ChunkUnit, y: ChunkUnit, z: ChunkUnit)
+
     class DoneChunks(tag: Tag) extends Table[(ChunkUnit, ChunkUnit, ChunkUnit)](tag, "donechunks") {
         def id = column[Long]("ROWID", O.AutoInc, O.PrimaryKey)
         def x = column[ChunkUnit]("x")
@@ -11,30 +13,23 @@ trait TerragenTables extends GeometryMappers {
         def z = column[ChunkUnit]("z")
         def level = column[Int]("level")
         def * = (x, y, z)
+
+        def chunks = (id, x, y, z) <> (DoneChunk.tupled, DoneChunk.unapply)
     }
 
     val doneChunksTable = TableQuery[DoneChunks]
 
-    class Meshes(tag: Tag) extends Table[(Int)](tag, "mesh") {
+    case class Mesh(id: Long, data: Array[Byte])
+
+    class Meshes(tag: Tag) extends Table[(Array[Byte], Long)](tag, "mesh") {
         def id = column[Long]("ROWID", O.AutoInc, O.PrimaryKey)
-        def level = column[Int]("level")
+        def chunkId = column[Long]("chunk_id")
         def data = column[Array[Byte]]("data")
-        def * = level
+        def chunk = foreignKey("FK_mesh_chunk", chunkId, doneChunksTable)(_.id)
+        def * = (data, chunkId)
+
+        def meshes = (id, data) <> (Mesh.tupled, Mesh.unapply)
     }
 
     val meshesTable = TableQuery[Meshes]
-
-    class MeshBounds(tag: Tag) extends Table[(Long, PositionUnit, PositionUnit, PositionUnit, PositionUnit, PositionUnit, PositionUnit)](tag, "meshbounds") {
-        def meshId = column[Long]("meshid")
-        def mesh = foreignKey("mesh_fk", meshId, meshesTable)(_.id)
-        def minx = column[PositionUnit]("minx")
-        def maxx = column[PositionUnit]("maxx")
-        def miny = column[PositionUnit]("miny")
-        def maxy = column[PositionUnit]("maxy")
-        def minz = column[PositionUnit]("minz")
-        def maxz = column[PositionUnit]("maxz")
-        def * = (meshId, minx, maxx, miny, maxy, minz, maxz)
-    }
-
-    val meshBoundsTable = TableQuery[MeshBounds]
 }

@@ -7,6 +7,7 @@ import org.kolinek.gengame.terragen.mesh.TriangleArea
 import org.kolinek.gengame.terragen.marchingcubes.MarchingCubesComputerProvider
 import org.kolinek.gengame.terragen.mesh.MeshProcessorProvider
 import com.typesafe.scalalogging.slf4j.LazyLogging
+import rx.lang.scala.Observable
 
 trait TerrainGenerator {
     def generateChunk(chunk: Chunk): Seq[TerrainPiece]
@@ -34,3 +35,9 @@ trait DefaultTerrainGeneratorProvider extends TerrainGeneratorProvider {
 
     lazy val terrainGenerator = new DefaultTerrainGenerator(marchingCubesComputer, meshProcessor)
 }
+
+trait ToGenerateProvider {
+    def toGenerate: Observable[Chunk]
+}
+
+trait 

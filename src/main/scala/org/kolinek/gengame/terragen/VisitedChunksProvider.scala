@@ -9,17 +9,7 @@ trait VisitedChunksProvider {
 }
 
 trait DefaultVisitedChunksProvider extends VisitedChunksProvider {
-    self: CameraPositionComponent =>
+    self: CameraPositionComponent with CurrentTerrainChunks =>
     lazy val visitedChunks = cameraPosition.map(_.bound.bound).distinctUntilChanged
 }
 
-trait VisitedChunksAroundOrigin extends VisitedChunksProvider {
-    lazy val visitedChunks = {
-        val chunks = for {
-            x <- -1.chunk to 1.chunk
-            y <- -1.chunk to 1.chunk
-            z <- -1.chunk to 1.chunk
-        } yield Point(x, y, z)
-        Observable.items(chunks: _*)
-    }
-}
