@@ -14,10 +14,16 @@ import org.kolinek.gengame.game.AssetManagerProvider
 import org.kolinek.gengame.terragen.db.TerrainRetrieverComponent
 import org.kolinek.gengame.terragen.db.InMemoryDatabaseProvider
 import org.kolinek.gengame.terragen.DefaultCurrentTerrainChunks
+import org.kolinek.gengame.terragen.db.TerrainPieceSaverComponent
+import org.kolinek.gengame.terragen.db.DefaultSavedTerrainPieceCreatorProvider
+import org.kolinek.gengame.terragen.DefaultGeneratedTerrainPiecesComponent
 
 trait TerrainGenerationModule
         extends TerrainAttacherComponent
         with InMemoryDatabaseProvider
+        with DefaultGeneratedTerrainPiecesComponent
+        with TerrainPieceSaverComponent
+        with DefaultSavedTerrainPieceCreatorProvider
         with TerrainRetrieverComponent
         with DefaultCurrentTerrainChunks
         with DefaultVisitedChunksProvider

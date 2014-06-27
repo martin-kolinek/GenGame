@@ -37,32 +37,11 @@ trait RXHelper {
         def scanI(f: (T, T) => T) = obs.scan(f)
     }
 
-    trait IsFuture[F, T] {
-        def onComplete(t: F, func: Try[T] => Unit)
-    }
-
-    implicit def futureIsFuture[T](implicit ec: ExecutionContext) = new IsFuture[Future[T], T] {
-        def onComplete(t: Future[T], func: Try[T] => Unit) = t.onComplete(func)
-    }
-
-    implicit class ObservableFuture[F, T](obs: Observable[F])(implicit ev: IsFuture[F, T]) {
-        def removeFuture: Observable[T] = {
-            val subj = Subject[T]
-            obs.subscribe(new Observer[F] {
-                override def onCompleted() {
-                    subj.onCompleted()
-                }
-                override def onNext(fut: F) {
-                    ev.onComplete(fut, {
-                        case Success(x) => subj.onNext(x)
-                        case Failure(thr) => subj.onError(thr)
-                    })
-                }
-                override def onError(error: Throwable) {
-                    subj.onError(error)
-                }
-            })
-            subj
+    implicit class JoinNextOps[T, R](obs: Observable[T]) {
+        def joinNextFrom(obs2: Observable[R])(equality: (T, R) => Boolean) = {
+            obs.map { t =>
+                obs2.filter(r => equality(t, r)).take(1).map(r => (t, r))
+            }.flatten
         }
     }
 }

@@ -39,5 +39,3 @@ trait DefaultTerrainGeneratorProvider extends TerrainGeneratorProvider {
 trait ToGenerateProvider {
     def toGenerate: Observable[Chunk]
 }
-
-trait 
