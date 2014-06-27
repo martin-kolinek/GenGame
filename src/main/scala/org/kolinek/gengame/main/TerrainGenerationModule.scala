@@ -12,7 +12,7 @@ import org.kolinek.gengame.terragen.mesh.DefaultMeshProcessorProvider
 import org.kolinek.gengame.terragen.DefaultTerragenDefinitionProvider
 import org.kolinek.gengame.game.AssetManagerProvider
 import org.kolinek.gengame.terragen.db.TerrainRetrieverComponent
-import org.kolinek.gengame.terragen.db.InMemoryDatabaseProvider
+import org.kolinek.gengame.db.InMemoryDatabaseProvider
 import org.kolinek.gengame.terragen.DefaultCurrentTerrainChunks
 import org.kolinek.gengame.terragen.db.TerrainPieceSaverComponent
 import org.kolinek.gengame.terragen.db.DefaultSavedTerrainPieceCreatorProvider

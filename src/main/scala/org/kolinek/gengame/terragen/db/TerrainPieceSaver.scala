@@ -13,6 +13,7 @@ import scala.concurrent.duration._
 import org.kolinek.gengame.threading.ErrorHelpers
 import org.kolinek.gengame.reporting.ErrorLoggingComponent
 import org.kolinek.gengame.terragen.GeneratedChunk
+import org.kolinek.gengame.db.DatabaseProvider
 
 class TerrainPieceSaver(savedTerrainPieceCreator: Observable[SavedTerrainPieceCreator])(implicit session: Session) extends TerragenTables {
 

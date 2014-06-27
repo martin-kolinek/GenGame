@@ -15,6 +15,7 @@ import org.kolinek.gengame.terragen.TerrainGeneratorProvider
 import org.kolinek.gengame.terragen.LoadTerrainPiece
 import org.kolinek.gengame.terragen.UnloadTerrainPiece
 import org.kolinek.gengame.terragen.SavedTerrainPieceAction
+import org.kolinek.gengame.db.DatabaseProvider
 
 class TerrainRetriever(savedTerrainPieceCreator: Observable[SavedTerrainPieceCreator])(implicit session: Session) extends TerragenTables {
     def retrieve(chunk: Chunk): Option[Observable[SavedTerrainPiece]] = {
