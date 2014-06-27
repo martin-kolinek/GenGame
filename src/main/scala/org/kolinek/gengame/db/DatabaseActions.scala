@@ -15,6 +15,8 @@ trait DatabaseAction[T] extends Function[Session, T] {
 
 trait DatabaseActionExecutor {
     def executeAction[T](act: DatabaseAction[T]): Observable[T]
+
+    def executeObsAction[T](act: DatabaseAction[Observable[T]]) = executeAction(act).flatten
 }
 
 trait DatabaseActionExecutorProvider {

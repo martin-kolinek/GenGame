@@ -8,43 +8,40 @@ import com.jme3.export.binary.BinaryExporter
 import java.io.ByteArrayOutputStream
 import org.kolinek.gengame.geometry._
 import rx.lang.scala.Observable
-import org.kolinek.gengame.terragen.GeneratedTerrainPiecesComponent
 import scala.concurrent.duration._
 import org.kolinek.gengame.threading.ErrorHelpers
 import org.kolinek.gengame.reporting.ErrorLoggingComponent
 import org.kolinek.gengame.terragen.GeneratedChunk
 import org.kolinek.gengame.db.DatabaseProvider
+import org.kolinek.gengame.db.DatabaseActionExecutorProvider
+import org.kolinek.gengame.db.DatabaseAction
+import org.kolinek.gengame.db.DatabaseActionExecutor
 
-class TerrainPieceSaver(savedTerrainPieceCreator: Observable[SavedTerrainPieceCreator])(implicit session: Session) extends TerragenTables {
+class TerrainPieceSaveAction(savedTerrainPieceCreator: Observable[SavedTerrainPieceCreator], piece: TerrainPiece, chunk: Chunk) extends DatabaseAction[Observable[SavedTerrainPiece]] with TerragenTables {
 
     val writer = new BinaryExporter
 
-    def saveTerrainPiece(genChunk: GeneratedChunk) = {
-        Observable.items(genChunk.pieces: _*).flatMap { piece =>
-            val mesh = piece.toJmeMesh
-            val stream = new ByteArrayOutputStream
-            writer.save(mesh, stream)
-            val data = stream.toByteArray
-            val chunkId = (doneChunksTable returning doneChunksTable.map(_.id)).insert((genChunk.chunk.x, genChunk.chunk.y, genChunk.chunk.z))
-            val meshId = (meshesTable returning meshesTable.map(_.id)).insert(data, chunkId)
-            savedTerrainPieceCreator.map(_.createTerrainPiece(data, meshId))
-        }
+    def apply(session: Session) = {
+        val mesh = piece.toJmeMesh
+        val stream = new ByteArrayOutputStream
+        writer.save(mesh, stream)
+        val data = stream.toByteArray
+        val chunkId = (doneChunksTable returning doneChunksTable.map(_.id)).insert((chunk.x, chunk.y, chunk.z))(session)
+        val meshId = (meshesTable returning meshesTable.map(_.id)).insert(data, chunkId)(session)
+        savedTerrainPieceCreator.map(_.createTerrainPiece(data, meshId))
     }
 }
 
-trait SavedTerrainPiecesComponent {
-    def savedTerrainPieces: Observable[SavedTerrainPiece]
+trait TerrainPieceSaver {
+    def savedTerrainPieces(genChunks: Observable[GeneratedChunk]): Observable[SavedChunk]
 }
 
-trait TerrainPieceSaverComponent extends SavedTerrainPiecesComponent with ErrorHelpers {
-    self: GeneratedTerrainPiecesComponent with ErrorLoggingComponent with DatabaseProvider with SavedTerrainPieceCreatorProvider =>
-
-    lazy val savedTerrainPieces = generatedTerrainPieces.buffer(500.milliseconds).flatMap { chunks =>
-        database.flatMap { db =>
-            db.withTransaction { implicit session =>
-                val saver = new TerrainPieceSaver(savedTerrainPieceCreator)
-                Observable.items(chunks: _*).subscribeOn(databaseScheduler).flatMap(saver.saveTerrainPiece)
+class DefaultTerrainPieceSaver(databaseActionExecutor: DatabaseActionExecutor, savedTerrainPieceCreator: Observable[SavedTerrainPieceCreator]) extends TerrainPieceSaver {
+    def savedTerrainPieces(genChunks: Observable[GeneratedChunk]) =
+        genChunks.map { chunk =>
+            val saveActions = Observable.from(chunk.pieces).map { piece =>
+                new TerrainPieceSaveAction(savedTerrainPieceCreator, piece, chunk.chunk)
             }
+            SavedChunk(chunk.chunk, saveActions.flatMap(databaseActionExecutor.executeObsAction))
         }
-    }
 }

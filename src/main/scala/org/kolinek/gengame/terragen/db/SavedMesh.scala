@@ -1,6 +1,7 @@
 package org.kolinek.gengame.terragen.db
 
 import com.jme3.scene.Mesh
+import org.kolinek.gengame.geometry._
 import com.jme3.scene.Node
 import com.jme3.scene.Geometry
 import com.jme3.asset.AssetManager
@@ -44,3 +45,5 @@ class SavedTerrainPiece(geom: Geometry, id: Long) {
         root.detachChild(geom)
     }
 }
+
+case class SavedChunk(chunk: Chunk, pieces: Observable[SavedTerrainPiece])

@@ -9,8 +9,14 @@ import org.kolinek.gengame.terragen.mesh.MeshProcessorProvider
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import rx.lang.scala.Observable
 
+case class GeneratedChunk(chunk: Chunk, pieces: Seq[TerrainPiece])
+
 trait TerrainGenerator {
     def generateChunk(chunk: Chunk): Seq[TerrainPiece]
+
+    def generateChunks(chunks: Observable[Chunk]): Observable[GeneratedChunk] = chunks.map { chunk =>
+        GeneratedChunk(chunk, generateChunk(chunk))
+    }
 }
 
 class DefaultTerrainGenerator(marchingCubesComputer: MarchingCubesComputer, meshProcessor: MeshProcessor) extends TerrainGenerator with LazyLogging {
@@ -36,6 +42,3 @@ trait DefaultTerrainGeneratorProvider extends TerrainGeneratorProvider {
     lazy val terrainGenerator = new DefaultTerrainGenerator(marchingCubesComputer, meshProcessor)
 }
 
-trait ToGenerateProvider {
-    def toGenerate: Observable[Chunk]
-}

@@ -11,20 +11,18 @@ import org.kolinek.gengame.terragen.marchingcubes.DefaultMarchingCubesComputerPr
 import org.kolinek.gengame.terragen.mesh.DefaultMeshProcessorProvider
 import org.kolinek.gengame.terragen.DefaultTerragenDefinitionProvider
 import org.kolinek.gengame.game.AssetManagerProvider
-import org.kolinek.gengame.terragen.db.TerrainRetrieverComponent
 import org.kolinek.gengame.db.InMemoryDatabaseProvider
 import org.kolinek.gengame.terragen.DefaultCurrentTerrainChunks
-import org.kolinek.gengame.terragen.db.TerrainPieceSaverComponent
 import org.kolinek.gengame.terragen.db.DefaultSavedTerrainPieceCreatorProvider
-import org.kolinek.gengame.terragen.DefaultGeneratedTerrainPiecesComponent
+import org.kolinek.gengame.db.BufferDatabaseActionExecutorProvider
+import org.kolinek.gengame.terragen.LocalTerrainPiecesProvider
 
 trait TerrainGenerationModule
         extends TerrainAttacherComponent
+        with LocalTerrainPiecesProvider
         with InMemoryDatabaseProvider
-        with DefaultGeneratedTerrainPiecesComponent
-        with TerrainPieceSaverComponent
+        with BufferDatabaseActionExecutorProvider
         with DefaultSavedTerrainPieceCreatorProvider
-        with TerrainRetrieverComponent
         with DefaultCurrentTerrainChunks
         with DefaultVisitedChunksProvider
         with DefaultTerrainGeneratorProvider
@@ -32,4 +30,6 @@ trait TerrainGenerationModule
         with DefaultMeshProcessorProvider
         with DefaultTerragenDefinitionProvider {
     self: CameraPositionComponent with SceneGraphProvider with ErrorLoggingComponent with AssetManagerProvider =>
+
+    def localTerrainPieces = ???
 }

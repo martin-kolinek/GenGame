@@ -2,6 +2,7 @@ package org.kolinek.gengame.terragen.db
 
 import slick.driver.SQLiteDriver.simple._
 import org.kolinek.gengame.geometry._
+import org.kolinek.gengame.db.GeometryMappers
 
 trait TerragenTables extends GeometryMappers {
     case class DoneChunk(id: Long, x: ChunkUnit, y: ChunkUnit, z: ChunkUnit)

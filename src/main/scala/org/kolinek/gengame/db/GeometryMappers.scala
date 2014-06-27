@@ -1,4 +1,4 @@
-package org.kolinek.gengame.terragen.db
+package org.kolinek.gengame.db
 
 import slick.driver.SQLiteDriver.simple._
 import org.kolinek.gengame.geometry._
