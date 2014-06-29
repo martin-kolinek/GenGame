@@ -16,47 +16,51 @@ import org.kolinek.gengame.terragen.UnloadTerrainPiece
 import org.kolinek.gengame.terragen.SavedTerrainPieceAction
 import org.kolinek.gengame.db.DatabaseProvider
 import org.kolinek.gengame.db.DatabaseAction
-
-/*class TerrainRetriever(savedTerrainPieceCreator: Observable[SavedTerrainPieceCreator])(implicit session: Session) extends TerragenTables {
-    def retrieve(chunk: Chunk): Option[Observable[SavedTerrainPiece]] = {
-        val doneChunksQuery = doneChunksTable.filter(ch => ch.x === chunk.x && ch.y === chunk.y && ch.z === chunk.z)
-        if (doneChunksQuery.list.isEmpty) {
-            None
-        } else {
-            val q = for {
-                ch <- doneChunksQuery
-                mesh <- meshesTable if ch.id === mesh.chunkId
-            } yield mesh.meshes
-            Some(Observable.from(q.list.map { mesh =>
-                savedTerrainPieceCreator.map(_.createTerrainPiece(mesh.data, mesh.id))
-            }).flatten)
-        }
-    }
-
-    def retrieveMultiple(chunks: Observable[Chunk]): Observable[(Chunk, Option[Observable[SavedTerrainPiece]])] = {
-        chunks.map(ch => ch -> retrieve(ch))
-    }
-}*/
+import org.kolinek.gengame.db.DatabaseActionExecutor
+import org.kolinek.gengame.db.DatabaseActionExecutorProvider
 
 sealed trait ChunkRetrieval
 
 case class ChunkNotGenerated(chunk: Chunk) extends ChunkRetrieval
 
-case class ChunkGenerated(chunk: Chunk, pieces: Seq[SavedTerrainPiece]) extends ChunkRetrieval
+case class ChunkGenerated(chunk: SavedChunk) extends ChunkRetrieval
 
 trait TerrainRetriever {
-    def chunkRetrievals(chunk: Observable[Chunk]): Observable[ChunkRetrieval]
+    def chunkRetrievals(chunks: Observable[Chunk]): Observable[ChunkRetrieval]
 }
 
 trait TerrainRetrieverProvider {
     def terrainRetriever: TerrainRetriever
 }
 
-/*class TerrainRetrieveAction extends DatabaseAction[Observable[]]
-
-trait TerrainRetrieverComponent extends LocalTerrainPiecesProvider with ToGenerateProvider {
-    self: DatabaseProvider with CurrentTerrainChunks with SavedTerrainPieceCreatorProvider with TerrainGeneratorProvider =>
-
-    lazy val 
+class TerrainRetrieveAction(chunk: Chunk, savedTerrainPieceCreator: Observable[SavedTerrainPieceCreator]) extends DatabaseAction[ChunkRetrieval] with TerragenTables {
+    def apply(session: Session) = {
+        val doneChunksQuery = doneChunksTable.filter(ch => ch.x === chunk.x && ch.y === chunk.y && ch.z === chunk.z)
+        if (doneChunksQuery.list(session).isEmpty) {
+            ChunkNotGenerated(chunk)
+        } else {
+            val q = for {
+                ch <- doneChunksQuery
+                mesh <- meshesTable if ch.id === mesh.chunkId
+            } yield mesh.meshes
+            val pieces = Observable.from(q.list(session).map { mesh =>
+                savedTerrainPieceCreator.map(_.createTerrainPiece(mesh.data, mesh.id))
+            }).flatten
+            ChunkGenerated(SavedChunk(chunk, pieces))
+        }
     }
-}*/
+}
+
+class DefaultTerrainRetriever(exec: DatabaseActionExecutor, savedTerrainPieceCreator: Observable[SavedTerrainPieceCreator]) extends TerrainRetriever {
+    def chunkRetrievals(chunks: Observable[Chunk]) = {
+        chunks.flatMap { ch =>
+            exec.executeAction(new TerrainRetrieveAction(ch, savedTerrainPieceCreator))
+        }
+    }
+}
+
+trait DefaultTerrainRetriverProvider extends TerrainRetrieverProvider {
+    self: SavedTerrainPieceCreatorProvider with DatabaseActionExecutorProvider =>
+
+    lazy val terrainRetriever = new DefaultTerrainRetriever(databaseActionExecutor, savedTerrainPieceCreator)
+}

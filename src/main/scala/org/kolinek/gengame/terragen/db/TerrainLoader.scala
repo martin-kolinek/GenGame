@@ -17,7 +17,7 @@ class DefaultTerrainLoader(retriever: TerrainRetriever, generator: TerrainGenera
     def loadTerrain(chunks: Observable[Chunk]) = {
         val chunkRetrievals = retriever.chunkRetrievals(chunks)
         val piecesFromDb = chunkRetrievals.collectPartFunc {
-            case ChunkGenerated(chunk, pieces) => SavedChunk(chunk, Observable.from(pieces))
+            case ChunkGenerated(SavedChunk(chunk, pieces)) => SavedChunk(chunk, pieces)
         }
         val generatedChunks = generator.generateChunks(chunkRetrievals.collectPartFunc {
             case ChunkNotGenerated(chunk) => chunk
