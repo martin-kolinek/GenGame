@@ -5,9 +5,10 @@ import com.jme3.niftygui.NiftyJmeDisplay
 import org.kolinek.gengame.threading.ErrorHelpers
 import org.kolinek.gengame.reporting.ErrorLoggingComponent
 import org.kolinek.gengame.game.AppProvider
+import org.kolinek.gengame.util.OnCloseProvider
 
-trait GameNiftyProvider extends NiftyProvider with Closeable with ErrorHelpers {
-    self: AppProvider with ErrorLoggingComponent =>
+trait GameNiftyProvider extends NiftyProvider with ErrorHelpers {
+    self: AppProvider with ErrorLoggingComponent with OnCloseProvider =>
 
     lazy val niftyDisplay = (for (a <- app) yield {
         val str = Thread.currentThread().getStackTrace().map(_.toString()).mkString("\n")
@@ -18,8 +19,7 @@ trait GameNiftyProvider extends NiftyProvider with Closeable with ErrorHelpers {
 
     lazy val nifty = niftyDisplay.map(_.getNifty)
 
-    abstract override def close() = {
-        super.close()
+    onClose.foreach { _ =>
         for {
             a <- app
             d <- niftyDisplay

@@ -15,6 +15,7 @@ import org.kolinek.gengame.config.DefaultConfigSaver
 import org.kolinek.gengame.reporting.DefaultErrorLoggingComponent
 import org.kolinek.gengame.game.DefaultAppProvider
 import org.kolinek.gengame.game.DefaultUpdateComponent
+import org.kolinek.gengame.util.DefaultOnCloseProvider
 
 class GuiAppState extends SimpleAppState {
     class Component
@@ -30,7 +31,7 @@ class GuiAppState extends SimpleAppState {
         with AppGameControlComponent
         with ApplyGraphicsConfigComponent
         with DefaultUpdateComponent
-        with Closeable
+        with DefaultOnCloseProvider
 
     def component = new Component
 }

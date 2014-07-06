@@ -5,6 +5,7 @@ import org.kolinek.gengame.reporting.DefaultErrorLoggingComponent
 import org.kolinek.gengame.main.DefaultCameraPosition
 import org.kolinek.gengame.game.nifty.GameNiftyProvider
 import org.kolinek.gengame.reporting.DefaultFPSCounterComponent
+import org.kolinek.gengame.util.DefaultOnCloseProvider
 
 trait BasicModule
         extends DefaultUpdateComponent
@@ -17,7 +18,8 @@ trait BasicModule
         with DefaultSceneGraphProvider
         with DefaultCameraPosition
         with GameNiftyProvider
-        with DefaultFPSCounterComponent {
+        with DefaultFPSCounterComponent
+        with DefaultOnCloseProvider {
     self: UnsafeAppProvider =>
 
 }

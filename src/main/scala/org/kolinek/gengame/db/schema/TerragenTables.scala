@@ -1,8 +1,9 @@
-package org.kolinek.gengame.terragen.db
+package org.kolinek.gengame.db.schema
 
 import slick.driver.SQLiteDriver.simple._
 import org.kolinek.gengame.geometry._
 import org.kolinek.gengame.db.GeometryMappers
+import scala.slick.jdbc.{ StaticQuery => Q }
 
 trait TerragenTables extends GeometryMappers {
     case class DoneChunk(id: Long, x: ChunkUnit, y: ChunkUnit, z: ChunkUnit)
@@ -34,3 +35,12 @@ trait TerragenTables extends GeometryMappers {
 
     val meshesTable = TableQuery[Meshes]
 }
+
+object Version2Terragen extends SchemaUpdater with TerragenTables {
+    val version = 2
+
+    def updateToWithoutVersion(s: Session) {
+        (doneChunksTable.ddl ++ meshesTable.ddl).create(s)
+        Q.updateNA("CREATE INDEX ix_donechunks ON donechunks(x, y, z)").execute(s)
+    }
+} 

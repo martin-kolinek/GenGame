@@ -11,7 +11,11 @@ import com.jme3.material.RenderState.FaceCullMode
 import rx.lang.scala.Observable
 import org.kolinek.gengame.game.AssetManagerProvider
 
-class SavedTerrainPieceCreator(assetManager: AssetManager) {
+trait SavedTerrainPieceCreator {
+    def createTerrainPiece(data: Array[Byte], id: Long): SavedTerrainPiece
+}
+
+class DefaultSavedTerrainPieceCreator(assetManager: AssetManager) extends SavedTerrainPieceCreator {
     val importer = new BinaryImporter
 
     def createTerrainPiece(data: Array[Byte], id: Long) = {
@@ -33,10 +37,10 @@ trait SavedTerrainPieceCreatorProvider {
 
 trait DefaultSavedTerrainPieceCreatorProvider extends SavedTerrainPieceCreatorProvider {
     self: AssetManagerProvider =>
-    def savedTerrainPieceCreator = assetManager.map(new SavedTerrainPieceCreator(_))
+    def savedTerrainPieceCreator = assetManager.map(new DefaultSavedTerrainPieceCreator(_))
 }
 
-class SavedTerrainPiece(geom: Geometry, id: Long) {
+class SavedTerrainPiece(val geom: Geometry, val id: Long) {
 
     def attach(root: Node) {
         root.attachChild(geom)

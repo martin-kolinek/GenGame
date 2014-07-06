@@ -16,11 +16,15 @@ import org.kolinek.gengame.terragen.DefaultCurrentTerrainChunks
 import org.kolinek.gengame.terragen.db.DefaultSavedTerrainPieceCreatorProvider
 import org.kolinek.gengame.db.BufferDatabaseActionExecutorProvider
 import org.kolinek.gengame.terragen.LocalTerrainPiecesProvider
+import org.kolinek.gengame.util.DefaultOnCloseProvider
+import org.kolinek.gengame.db.schema.DefaultSchemaCreatorProvider
 
 trait TerrainGenerationModule
         extends TerrainAttacherComponent
         with LocalTerrainPiecesProvider
         with InMemoryDatabaseProvider
+        with DefaultOnCloseProvider
+        with DefaultSchemaCreatorProvider
         with BufferDatabaseActionExecutorProvider
         with DefaultSavedTerrainPieceCreatorProvider
         with DefaultCurrentTerrainChunks

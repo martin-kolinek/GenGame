@@ -16,6 +16,7 @@ import org.kolinek.gengame.db.DatabaseProvider
 import org.kolinek.gengame.db.DatabaseActionExecutorProvider
 import org.kolinek.gengame.db.DatabaseAction
 import org.kolinek.gengame.db.DatabaseActionExecutor
+import org.kolinek.gengame.db.schema.TerragenTables
 
 class TerrainPieceSaveAction(savedTerrainPieceCreator: Observable[SavedTerrainPieceCreator], piece: TerrainPiece, chunk: Chunk) extends DatabaseAction[Observable[SavedTerrainPiece]] with TerragenTables {
 

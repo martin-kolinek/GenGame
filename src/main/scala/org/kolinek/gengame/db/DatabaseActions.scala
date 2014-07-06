@@ -9,8 +9,23 @@ import org.kolinek.gengame.threading.ErrorHelpers
 import org.kolinek.gengame.reporting.ErrorLoggingComponent
 import rx.schedulers.Schedulers
 import rx.lang.scala.JavaConversions._
+import org.kolinek.gengame.util.OnCloseProvider
+import com.sun.xml.internal.ws.Closeable
+import scala.concurrent.ExecutionContext
+import java.util.concurrent.Executors
+import scala.concurrent.Future
+import org.kolinek.gengame.threading.SingleThreadedScheduler
+import rx.lang.scala.Subscriber
+import java.util.concurrent.RejectedExecutionException
+import org.kolinek.gengame.db.schema.SchemaCreatorProvider
 
 trait DatabaseAction[T] extends Function[Session, T] {
+}
+
+object DatabaseAction {
+    def apply[T](f: Session => T) = new DatabaseAction[T] {
+        def apply(s: Session) = f(s)
+    }
 }
 
 trait DatabaseActionExecutor {
@@ -23,11 +38,23 @@ trait DatabaseActionExecutorProvider {
     def databaseActionExecutor: DatabaseActionExecutor
 }
 
-trait BufferDatabaseActionExecutorProvider extends DatabaseActionExecutorProvider with ErrorHelpers {
-    self: ErrorLoggingComponent with DatabaseProvider =>
+trait DatabaseseActionExecutorWithSchemaCreation extends DatabaseActionExecutorProvider {
+    self: SchemaCreatorProvider =>
+    final lazy val databaseActionExecutor = {
+        val exec = databaseActionExecutorWithoutPrep
+        exec.executeAction(schemaCreator)
+        exec
+    }
+    protected def databaseActionExecutorWithoutPrep: DatabaseActionExecutor
+}
 
-    lazy val databaseActionExecutor = new DatabaseActionExecutor {
+trait BufferDatabaseActionExecutorProvider extends DatabaseseActionExecutorWithSchemaCreation with ErrorHelpers {
+    self: ErrorLoggingComponent with DatabaseProvider with SchemaCreatorProvider with OnCloseProvider =>
+
+    lazy val databaseActionExecutorWithoutPrep = new DatabaseActionExecutor with Closeable {
         val subject = Subject[Function[Session, Unit]]()
+        val executor = Executors.newSingleThreadScheduledExecutor()
+        val execCtx = ErrorReportExecutionContext.fromExecutor(executor)
 
         def executeAction[T](act: DatabaseAction[T]): Observable[T] = {
             val ret = ReplaySubject[T]
@@ -35,15 +62,48 @@ trait BufferDatabaseActionExecutorProvider extends DatabaseActionExecutorProvide
                 ret.onNext(act(s))
                 ret.onCompleted
             }
-            ret.subscribeOn(Schedulers.computation())
+            ret
         }
 
         subject.buffer(500.milliseconds).foreach { funcs =>
-            database.foreach { db =>
-                db.withTransaction { session =>
+            Future {
+                database.withTransaction { session =>
                     funcs.foreach(_(session))
                 }
-            }
+            }(execCtx)
         }
+
+        def close() {
+            subject.onCompleted()
+            executor.shutdown()
+        }
+    }
+
+    onClose.foreach { _ =>
+        databaseActionExecutorWithoutPrep.close()
+    }
+}
+
+trait SingleSessionDatabaseActionExecutorProvider extends DatabaseseActionExecutorWithSchemaCreation with ErrorHelpers with OnCloseProvider {
+    self: ErrorLoggingComponent with DatabaseProvider with SchemaCreatorProvider =>
+
+    lazy val databaseActionExecutorWithoutPrep = new DatabaseActionExecutor with Closeable {
+        private lazy val session = database.createSession
+        private val scheduler = new SingleThreadedScheduler
+
+        def executeAction[T](act: DatabaseAction[T]): Observable[T] = {
+            Observable { subscriber: Subscriber[T] =>
+                subscriber.onNext(act(session))
+                subscriber.onCompleted()
+            }.subscribeOn(scheduler)
+        }
+
+        def close() = {
+            session.close()
+        }
+    }
+
+    onClose.foreach { _ =>
+        databaseActionExecutorWithoutPrep.close()
     }
 }
