@@ -27,4 +27,12 @@ class SimpleSessionDatabaseActionExecutorTest extends FunSuite {
         assert(comp.databaseActionExecutor.executeAction(act).toBlocking.single === comp.dbThreadId)
         comp.close()
     }
+
+    test("SimpleSessionDatabaseActionExecutor executes action without subscriber") {
+        val comp = new TestComp
+        var executed = false
+        comp.databaseActionExecutor.executeAction(DatabaseAction(s => executed = true))
+        comp.databaseActionExecutor.executeAction(DatabaseAction(s => {})).toBlocking.single
+        assert(executed)
+    }
 }

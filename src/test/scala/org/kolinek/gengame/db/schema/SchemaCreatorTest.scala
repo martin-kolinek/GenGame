@@ -7,12 +7,18 @@ import org.kolinek.gengame.db.TestActionExecutor
 import org.kolinek.gengame.reporting.DefaultErrorLoggingComponent
 import org.kolinek.gengame.db.DatabaseAction
 import slick.driver.SQLiteDriver.simple._
+import org.kolinek.gengame.db.SingleSessionDatabaseActionExecutorProvider
 
 class SchemaCreatorTest extends FunSuite with TerragenTables {
     class TestComp extends TestDatabaseProvider
-        with TestActionExecutor
-        with DefaultOnCloseProvider
-        with DefaultErrorLoggingComponent
+            with SingleSessionDatabaseActionExecutorProvider
+            with SchemaCreatorProvider
+            with DefaultOnCloseProvider
+            with DefaultErrorLoggingComponent {
+        def schemaCreator = new SchemaCreator {
+            def apply(s: Session) = {}
+        }
+    }
 
     test("Version 1 works") {
         val comp = new TestComp
@@ -69,7 +75,7 @@ class SchemaCreatorTest extends FunSuite with TerragenTables {
         comp.databaseActionExecutor.executeAction(upd2).toBlocking.single
         assert(upd2.executed)
         upd2.executed = false
-        comp.databaseActionExecutor.executeAction(schemaCreator)
+        comp.databaseActionExecutor.executeAction(schemaCreator).toBlocking.single
         assert(!upd2.executed)
         assert(upd3.executed)
     }

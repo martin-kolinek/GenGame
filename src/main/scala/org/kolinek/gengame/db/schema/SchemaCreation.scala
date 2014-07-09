@@ -42,5 +42,5 @@ class DefaultSchemaCreator(updaters: SchemaUpdater*) extends SchemaCreator {
 }
 
 trait DefaultSchemaCreatorProvider extends SchemaCreatorProvider {
-    def schemaCreator = new DefaultSchemaCreator(Version1SchemaVersion)
+    def schemaCreator = new DefaultSchemaCreator(Version1SchemaVersion, Version2Terragen)
 }

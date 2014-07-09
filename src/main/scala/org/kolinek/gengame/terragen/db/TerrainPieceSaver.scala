@@ -46,3 +46,13 @@ class DefaultTerrainPieceSaver(databaseActionExecutor: DatabaseActionExecutor, s
             SavedChunk(chunk.chunk, saveActions.flatMap(databaseActionExecutor.executeObsAction))
         }
 }
+
+trait TerrainPieceSaverProvider {
+    def terrainPieceSaver: TerrainPieceSaver
+}
+
+trait DefaultTerrainPieceSaverProvider extends TerrainPieceSaverProvider {
+    self: DatabaseActionExecutorProvider with SavedTerrainPieceCreatorProvider =>
+
+    lazy val terrainPieceSaver = new DefaultTerrainPieceSaver(databaseActionExecutor, savedTerrainPieceCreator)
+}

@@ -12,24 +12,25 @@ import org.kolinek.gengame.db.InMemoryDatabaseProvider
 import org.kolinek.gengame.reporting.DefaultErrorLoggingComponent
 import slick.driver.SQLiteDriver.simple._
 import org.kolinek.gengame.threading.ErrorHelpers
+import org.kolinek.gengame.db.schema.TerragenTables
+import org.kolinek.gengame.db.schema.DefaultSchemaCreatorProvider
+import org.kolinek.gengame.util.DefaultOnCloseProvider
+import org.kolinek.gengame.db.SingleSessionDatabaseActionExecutorProvider
 
 class TerrainRetrieverTest extends FunSuite {
     class TestTerrainPieceCreator extends SavedTerrainPieceCreator {
         def createTerrainPiece(data: Array[Byte], id: Long) = new SavedTerrainPiece(null, id)
     }
 
-    /*class TerrainRetrieverComponent extends DefaultTerrainRetriverProvider
-    with {
-
-    }*/
-
-    /*object DatabaseComponent extends BufferDatabaseActionExecutorProvider
+    class TestComp extends SingleSessionDatabaseActionExecutorProvider
             with InMemoryDatabaseProvider
             with DefaultErrorLoggingComponent
+            with DefaultSchemaCreatorProvider
             with ErrorHelpers
-            with TerragenTables {
-        val chunk = database.map(db => db.withSession { implicit s =>
-            println("creating chunks")
+            with TerragenTables
+            with DefaultOnCloseProvider {
+
+        val chunk = databaseActionExecutor.executeAction(DatabaseAction { implicit s =>
             val chunk = (doneChunksTable returning doneChunksTable.map(_.id)) += (1.chunk, 1.chunk, 1.chunk)
             meshesTable.insert(Array(), chunk)
             chunk
@@ -38,43 +39,56 @@ class TerrainRetrieverTest extends FunSuite {
 
     test("TerrainRetrieverAction works for existing chunk") {
         val existChunk = Chunk(1.chunk, 1.chunk, 1.chunk)
-
-        println("executing existing")
-        /*val testExisting = DatabaseComponent.databaseActionExecutor.executeAction(
+        val comp = new TestComp
+        val testExisting = comp.databaseActionExecutor.executeAction(
             new TerrainRetrieveAction(
                 existChunk,
-                Observable.items(new TestTerrainPieceCreator)))*/
-        Thread.sleep(1000)
-        info(DatabaseComponent.chunk.toBlocking.single.toString)
-        /*assert(testExisting.toBlocking.single match {
+                Observable.items(new TestTerrainPieceCreator)))
+        assert(testExisting.toBlocking.single match {
             case ChunkGenerated(SavedChunk(existChunk, pieces)) => {
                 lazy val piece = pieces.toBlocking.head
                 pieces.toBlocking.toList.size == 1 &&
-                    piece.id == DatabaseComponent.chunk.toBlocking.single &&
+                    piece.id == comp.chunk.toBlocking.single &&
                     piece.geom == null
             }
             case _ => false
-        })*/
+        })
+        comp.close()
     }
 
-    /*test("TerrainRetrieverAction works for non existent chunk") {
+    test("TerrainRetrieverAction works for non existent chunk") {
         val nonExistChunk = Chunk(1.chunk, 1.chunk, 3.chunk)
-
-        println("executing not existing")
-        val testNonExisting = DatabaseComponent.databaseActionExecutor.executeAction(
+        val comp = new TestComp
+        val testNonExisting = comp.databaseActionExecutor.executeAction(
             new TerrainRetrieveAction(
                 nonExistChunk,
                 Observable.items(new TestTerrainPieceCreator)))
 
         assert(testNonExisting.toBlocking.single === ChunkNotGenerated(nonExistChunk))
-    }*/
+        comp.close()
+    }
 
-    test("DefaultTerrainRetriever works") {
-        /*val retriverComp = new TestComp
-        retriverComp.terrainRetriever.chunkRetrievals(Observable.items(
-            Chunk(1.chunk, 1.chunk, 1.chunk),
+    class RetrieverComp extends DefaultTerrainRetriverProvider
+            with InMemoryDatabaseProvider
+            with SingleSessionDatabaseActionExecutorProvider
+            with DefaultErrorLoggingComponent
+            with DefaultSchemaCreatorProvider
+            with SavedTerrainPieceCreatorProvider
+            with DefaultOnCloseProvider {
+        lazy val savedTerrainPieceCreator = Observable.items(new TestTerrainPieceCreator)
+    }
+
+    test("DefaultTerrainRetriever checks all chunks") {
+        val retriverComp = new RetrieverComp
+        val chunks = Seq(Chunk(1.chunk, 1.chunk, 1.chunk),
             Chunk(2.chunk, 2.chunk, 2.chunk),
-            Chunk(-5.chunk, -1.chunk, -4.chunk)))
-*/
-    }*/
+            Chunk(-5.chunk, -1.chunk, -4.chunk))
+
+        val retrievals = retriverComp.terrainRetriever.chunkRetrievals(Observable.items(chunks: _*))
+
+        assert(retrievals.toBlocking.toList.collect {
+            case ChunkNotGenerated(ch) => ch
+        }.toSet === chunks.toSet)
+
+    }
 }

@@ -84,22 +84,26 @@ trait BufferDatabaseActionExecutorProvider extends DatabaseseActionExecutorWithS
     }
 }
 
-trait SingleSessionDatabaseActionExecutorProvider extends DatabaseseActionExecutorWithSchemaCreation with ErrorHelpers with OnCloseProvider {
-    self: ErrorLoggingComponent with DatabaseProvider with SchemaCreatorProvider =>
+trait SingleSessionDatabaseActionExecutorProvider extends DatabaseseActionExecutorWithSchemaCreation with ErrorHelpers {
+    self: ErrorLoggingComponent with DatabaseProvider with SchemaCreatorProvider with OnCloseProvider =>
 
     lazy val databaseActionExecutorWithoutPrep = new DatabaseActionExecutor with Closeable {
         private lazy val session = database.createSession
-        private val scheduler = new SingleThreadedScheduler
+        val executor = Executors.newSingleThreadScheduledExecutor()
+        val execCtx = ErrorReportExecutionContext.fromExecutor(executor)
 
         def executeAction[T](act: DatabaseAction[T]): Observable[T] = {
-            Observable { subscriber: Subscriber[T] =>
-                subscriber.onNext(act(session))
-                subscriber.onCompleted()
-            }.subscribeOn(scheduler)
+            val subj = ReplaySubject[T]
+            Future {
+                subj.onNext(act(session))
+                subj.onCompleted()
+            }(execCtx)
+            subj
         }
 
         def close() = {
             session.close()
+            executor.shutdown()
         }
     }
 

@@ -4,6 +4,7 @@ import org.kolinek.gengame.geometry._
 import rx.lang.scala.Observable
 import org.kolinek.gengame.terragen.TerrainGenerator
 import org.kolinek.gengame.util._
+import org.kolinek.gengame.terragen.TerrainGeneratorProvider
 
 trait TerrainLoader {
     def loadTerrain(chunks: Observable[Chunk]): Observable[SavedChunk]
@@ -26,4 +27,10 @@ class DefaultTerrainLoader(retriever: TerrainRetriever, generator: TerrainGenera
 
         piecesFromDb merge generatedSavedPieces
     }
+}
+
+trait DefaultTerrainLoaderProvider {
+    self: TerrainRetrieverProvider with TerrainGeneratorProvider with TerrainPieceSaverProvider =>
+        
+    lazy val terrainLoader = new DefaultTerrainLoader(terrainRetriever, terrainGenerator, terrainPieceSaver)
 }
