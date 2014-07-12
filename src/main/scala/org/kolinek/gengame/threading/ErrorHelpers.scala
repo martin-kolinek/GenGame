@@ -7,13 +7,10 @@ import scala.util.Success
 import scala.util.Failure
 import java.util.concurrent.Executor
 import scala.concurrent.ExecutionContext
+import rx.lang.scala.Subscriber
 
-trait ErrorHelpers {
+trait ErrorHelpers2 {
     self: ErrorLoggingComponent =>
-
-    implicit class ObservableErrorOps[T](obs: Observable[T]) {
-        def foreach(f: T => Unit) = obs.subscribe(f, errorLogger.logError _)
-    }
 
     object ErrorReportExecutionContext {
         def fromExecutor(exec: Executor) = ExecutionContext.fromExecutor(exec, errorLogger.logError)

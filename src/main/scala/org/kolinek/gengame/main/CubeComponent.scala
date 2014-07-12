@@ -1,7 +1,5 @@
 package org.kolinek.gengame.main
 
-import org.kolinek.gengame.threading.ErrorHelpers
-import org.kolinek.gengame.reporting.ErrorLoggingComponent
 import com.jme3.scene.shape.Box
 import com.jme3.scene.Geometry
 import com.jme3.material.Material
@@ -10,8 +8,8 @@ import org.kolinek.gengame.game.AppProvider
 import org.kolinek.gengame.game.SceneGraphProvider
 import org.kolinek.gengame.game.AssetManagerProvider
 
-trait CubeComponent extends ErrorHelpers {
-    self: SceneGraphProvider with ErrorLoggingComponent with AssetManagerProvider =>
+trait CubeComponent {
+    self: SceneGraphProvider with AssetManagerProvider =>
 
     for {
         root <- sceneGraphRoot

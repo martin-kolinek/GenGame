@@ -4,15 +4,13 @@ import java.nio.file.Paths
 import com.typesafe.config.ConfigFactory
 import com.typesafe.config.Config
 import org.apache.commons.io.FileUtils
-import org.kolinek.gengame.threading.ErrorHelpers
-import org.kolinek.gengame.reporting.ErrorLoggingComponent
 
 trait ConfigSaver {
     def configFromFile: Config
 }
 
-trait DefaultConfigSaver extends ConfigSaver with ErrorHelpers {
-    self: ConfigProvider with ErrorLoggingComponent =>
+trait DefaultConfigSaver extends ConfigSaver {
+    self: ConfigProvider =>
 
     private def path = Paths.get(System.getProperty("user.home"), ".GenGame", "config.conf")
 

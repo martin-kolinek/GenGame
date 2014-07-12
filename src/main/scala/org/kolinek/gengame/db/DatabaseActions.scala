@@ -5,7 +5,6 @@ import rx.lang.scala.Subject
 import rx.lang.scala.Observable
 import rx.lang.scala.subjects.ReplaySubject
 import scala.concurrent.duration._
-import org.kolinek.gengame.threading.ErrorHelpers
 import org.kolinek.gengame.reporting.ErrorLoggingComponent
 import rx.schedulers.Schedulers
 import rx.lang.scala.JavaConversions._
@@ -18,6 +17,7 @@ import org.kolinek.gengame.threading.SingleThreadedScheduler
 import rx.lang.scala.Subscriber
 import java.util.concurrent.RejectedExecutionException
 import org.kolinek.gengame.db.schema.SchemaCreatorProvider
+import org.kolinek.gengame.threading.ErrorHelpers2
 
 trait DatabaseAction[T] extends Function[Session, T] {
 }
@@ -48,7 +48,7 @@ trait DatabaseseActionExecutorWithSchemaCreation extends DatabaseActionExecutorP
     protected def databaseActionExecutorWithoutPrep: DatabaseActionExecutor
 }
 
-trait BufferDatabaseActionExecutorProvider extends DatabaseseActionExecutorWithSchemaCreation with ErrorHelpers {
+trait BufferDatabaseActionExecutorProvider extends DatabaseseActionExecutorWithSchemaCreation with ErrorHelpers2 {
     self: ErrorLoggingComponent with DatabaseProvider with SchemaCreatorProvider with OnCloseProvider =>
 
     lazy val databaseActionExecutorWithoutPrep = new DatabaseActionExecutor with Closeable {
@@ -84,7 +84,7 @@ trait BufferDatabaseActionExecutorProvider extends DatabaseseActionExecutorWithS
     }
 }
 
-trait SingleSessionDatabaseActionExecutorProvider extends DatabaseseActionExecutorWithSchemaCreation with ErrorHelpers {
+trait SingleSessionDatabaseActionExecutorProvider extends DatabaseseActionExecutorWithSchemaCreation with ErrorHelpers2 {
     self: ErrorLoggingComponent with DatabaseProvider with SchemaCreatorProvider with OnCloseProvider =>
 
     lazy val databaseActionExecutorWithoutPrep = new DatabaseActionExecutor with Closeable {

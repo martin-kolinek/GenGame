@@ -5,8 +5,6 @@ import com.jme3.input.KeyInput
 import org.kolinek.gengame.config.ControlsConfigProvider
 import org.kolinek.gengame.game.InputManagerProvider
 import rx.lang.scala.subjects.BehaviorSubject
-import org.kolinek.gengame.threading.ErrorHelpers
-import org.kolinek.gengame.reporting.ErrorLoggingComponent
 import com.jme3.input.RawInputListener
 import com.jme3.input.controls.KeyTrigger
 import com.jme3.input.controls.ActionListener
@@ -28,8 +26,8 @@ trait ControlsComponent {
     def mouse: Observable[(Float, Float)]
 }
 
-trait DefaultControlsComponent extends ControlsComponent with ErrorHelpers {
-    self: ControlsConfigProvider with InputManagerProvider with ErrorLoggingComponent =>
+trait DefaultControlsComponent extends ControlsComponent {
+    self: ControlsConfigProvider with InputManagerProvider =>
 
     private var counter = 0
 
@@ -95,5 +93,5 @@ trait DefaultControlsComponent extends ControlsComponent with ErrorHelpers {
 
 trait ControlsModule
         extends DefaultControlsComponent {
-    self: ControlsConfigProvider with InputManagerProvider with ErrorLoggingComponent =>
+    self: ControlsConfigProvider with InputManagerProvider =>
 }

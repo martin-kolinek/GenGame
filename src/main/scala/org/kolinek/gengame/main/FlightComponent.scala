@@ -7,7 +7,6 @@ import org.kolinek.gengame.geometry._
 import org.kolinek.gengame.game.UpdateComponent
 import org.kolinek.gengame.util._
 import spire.syntax.vectorSpace._
-import org.kolinek.gengame.threading.ErrorHelpers
 import org.kolinek.gengame.reporting.ErrorLoggingComponent
 import org.kolinek.gengame.game.JmeCameraComponent
 import com.jme3.math.Vector3f
@@ -52,8 +51,8 @@ trait DefaultFlightComponent extends FlightComponent {
     }
 }
 
-trait JmeFlightComponent extends ErrorHelpers {
-    self: FlightComponent with JmeCameraComponent with ErrorLoggingComponent with InputManagerProvider =>
+trait JmeFlightComponent {
+    self: FlightComponent with JmeCameraComponent with InputManagerProvider =>
 
     cameraSteps.foreach { c =>
         jmeCamera.foreach { jc =>

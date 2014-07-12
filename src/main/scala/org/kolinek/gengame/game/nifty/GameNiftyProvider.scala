@@ -2,13 +2,11 @@ package org.kolinek.gengame.game.nifty
 
 import org.kolinek.gengame.util.Closeable
 import com.jme3.niftygui.NiftyJmeDisplay
-import org.kolinek.gengame.threading.ErrorHelpers
-import org.kolinek.gengame.reporting.ErrorLoggingComponent
 import org.kolinek.gengame.game.AppProvider
 import org.kolinek.gengame.util.OnCloseProvider
 
-trait GameNiftyProvider extends NiftyProvider with ErrorHelpers {
-    self: AppProvider with ErrorLoggingComponent with OnCloseProvider =>
+trait GameNiftyProvider extends NiftyProvider {
+    self: AppProvider with OnCloseProvider =>
 
     lazy val niftyDisplay = (for (a <- app) yield {
         val str = Thread.currentThread().getStackTrace().map(_.toString()).mkString("\n")

@@ -1,13 +1,11 @@
 package org.kolinek.gengame.main
 
-import org.kolinek.gengame.threading.ErrorHelpers
-import org.kolinek.gengame.reporting.ErrorLoggingComponent
 import org.kolinek.gengame.game.nifty.SimpleScreenController
 import org.kolinek.gengame.threading.GameExecutionContextComponent
 import org.kolinek.gengame.reporting.FPSCounterComponent
 
-trait HudComponent extends ErrorHelpers {
-    self: ErrorLoggingComponent with CameraPositionComponent with GameExecutionContextComponent with FPSCounterComponent =>
+trait HudComponent {
+    self: CameraPositionComponent with GameExecutionContextComponent with FPSCounterComponent =>
 
     class HudController extends SimpleScreenController {
         lazy val fpsLabel = new NiftyLabel("FPSLabel")

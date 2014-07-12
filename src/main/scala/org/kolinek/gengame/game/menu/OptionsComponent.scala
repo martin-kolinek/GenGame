@@ -26,11 +26,9 @@ import org.kolinek.gengame.config.ConfigProvider
 import net.ceedubs.ficus.FicusConfig._
 import org.kolinek.gengame.config.ConfigUpdaterComponent
 import org.kolinek.gengame.config.Lenses
-import org.kolinek.gengame.threading.ErrorHelpers
-import org.kolinek.gengame.reporting.ErrorLoggingComponent
 
-trait OptionsComponent extends ErrorHelpers {
-    self: MenuComponent with GraphicsConfigProvider with GameExecutionContextComponent with ConfigUpdaterComponent with ConfigProvider with ErrorLoggingComponent =>
+trait OptionsComponent {
+    self: MenuComponent with GraphicsConfigProvider with GameExecutionContextComponent with ConfigUpdaterComponent with ConfigProvider =>
 
     class OptionsController extends SimpleScreenController with LazyLogging {
 

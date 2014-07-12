@@ -3,8 +3,6 @@ package org.kolinek.gengame.db
 import slick.driver.SQLiteDriver.simple._
 import org.kolinek.gengame.util.OnCloseProvider
 import rx.lang.scala.Observable
-import org.kolinek.gengame.reporting.ErrorLoggingComponent
-import org.kolinek.gengame.threading.ErrorHelpers
 
 trait TestDatabaseProvider extends DatabaseProvider {
     private var dbThreadIdVar = -1L
@@ -18,8 +16,8 @@ trait TestDatabaseProvider extends DatabaseProvider {
     }
 }
 
-trait TestActionExecutor extends DatabaseActionExecutorProvider with ErrorHelpers {
-    self: DatabaseProvider with OnCloseProvider with ErrorLoggingComponent =>
+trait TestActionExecutor extends DatabaseActionExecutorProvider {
+    self: DatabaseProvider with OnCloseProvider =>
 
     private lazy val session = database.createSession()
 

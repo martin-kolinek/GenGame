@@ -41,11 +41,18 @@ trait DbLocalTerrainPiecesProvider extends LocalTerrainPiecesProvider {
             ((ch, loadUnloads), retrievals) <- loadUnloads.joinNextFrom(loaded)(_._1 == _.chunk)
         } yield {
             val unload = loadUnloads.collectPartFunc {
-                case TerrainChunkUnload(ch) => ch
+                case TerrainChunkUnload(ch) => {
+                    println(s"unload $ch")
+                    ch
+                }
             }
-            val loads: Observable[SavedTerrainPieceAction] = retrievals.pieces.map(LoadTerrainPiece)
-            val unloads: Observable[SavedTerrainPieceAction] = retrievals.pieces.replay.map(UnloadTerrainPiece)
-            loads.takeUntil(unload) ++ unloads
+            unload.subscribe(x => println(s"unload $x"), x => println(s"error $x"), () => println("unload done"))
+            val loads = retrievals.pieces.map(LoadTerrainPiece)
+            //loads.subscribe(x => println(s"loads $x"))
+            val unloads = retrievals.pieces.map(UnloadTerrainPiece).replay
+            //unloads.subscribe(x => println(s"unloads $x"))
+            unloads.connect
+            loads /*.takeUntil(unload)*/ ++ unloads
         }
 
         actionObservables.flatten

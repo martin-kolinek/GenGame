@@ -12,8 +12,6 @@ import rx.lang.scala.Subscription
 import rx.lang.scala.Subject
 import rx.lang.scala.JavaConversions._
 import org.kolinek.gengame.util.withLatest
-import org.kolinek.gengame.threading.ErrorHelpers
-import org.kolinek.gengame.reporting.ErrorLoggingComponent
 
 trait ConfigProvider {
     def config: Observable[Config]
@@ -27,8 +25,8 @@ trait ConfigUpdaterComponent {
     def configUpdater: ConfigUpdater
 }
 
-trait DefaultConfigProvider extends ConfigProvider with ConfigUpdaterComponent with ErrorHelpers {
-    self: ConfigSaver with ErrorLoggingComponent =>
+trait DefaultConfigProvider extends ConfigProvider with ConfigUpdaterComponent {
+    self: ConfigSaver =>
 
     private lazy val subj = BehaviorSubject(configFromFile)
 

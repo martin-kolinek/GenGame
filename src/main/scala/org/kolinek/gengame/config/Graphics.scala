@@ -9,8 +9,6 @@ import com.typesafe.config.Config
 import com.typesafe.config.ConfigValue
 import com.typesafe.config.ConfigObject
 import com.typesafe.config.ConfigValueFactory
-import org.kolinek.gengame.threading.ErrorHelpers
-import org.kolinek.gengame.reporting.ErrorLoggingComponent
 import org.kolinek.gengame.game.AppProvider
 
 trait GraphicsConfigProvider {
@@ -23,8 +21,8 @@ trait DefaultGraphicsConfigProvider extends GraphicsConfigProvider {
     lazy val graphicsConfig = config.map(Lenses.graphicsConfigLens.get)
 }
 
-trait ApplyGraphicsConfigComponent extends ErrorHelpers {
-    self: GraphicsConfigProvider with AppProvider with ErrorLoggingComponent =>
+trait ApplyGraphicsConfigComponent {
+    self: GraphicsConfigProvider with AppProvider =>
 
     graphicsConfig.foreach { conf =>
         app.foreach { a =>

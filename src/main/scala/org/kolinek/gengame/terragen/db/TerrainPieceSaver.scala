@@ -9,8 +9,6 @@ import java.io.ByteArrayOutputStream
 import org.kolinek.gengame.geometry._
 import rx.lang.scala.Observable
 import scala.concurrent.duration._
-import org.kolinek.gengame.threading.ErrorHelpers
-import org.kolinek.gengame.reporting.ErrorLoggingComponent
 import org.kolinek.gengame.terragen.GeneratedChunk
 import org.kolinek.gengame.db.DatabaseProvider
 import org.kolinek.gengame.db.DatabaseActionExecutorProvider

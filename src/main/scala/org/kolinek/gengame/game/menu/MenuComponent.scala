@@ -8,8 +8,6 @@ import org.kolinek.gengame.config.GraphicsConfigProvider
 import org.kolinek.gengame.threading.GameExecutionContextComponent
 import de.lessvoid.nifty.Nifty
 import org.kolinek.gengame.config.ConfigUpdaterComponent
-import org.kolinek.gengame.threading.ErrorHelpers
-import org.kolinek.gengame.reporting.ErrorLoggingComponent
 import rx.lang.scala.Observable
 
 trait Menu {
@@ -22,8 +20,8 @@ trait MenuComponent {
     def menu: Observable[Menu]
 }
 
-trait GameMenuComponent extends MenuComponent with MainMenuComponent with StartMenuComponent with OptionsComponent with ErrorHelpers {
-    self: NiftyProvider with GameControlComponent with GraphicsConfigProvider with GameExecutionContextComponent with ConfigUpdaterComponent with ConfigProvider with ErrorLoggingComponent =>
+trait GameMenuComponent extends MenuComponent with MainMenuComponent with StartMenuComponent with OptionsComponent {
+    self: NiftyProvider with GameControlComponent with GraphicsConfigProvider with GameExecutionContextComponent with ConfigUpdaterComponent with ConfigProvider =>
 
     lazy val mainMenu = new MainMenu
     lazy val startMenu = new StartMenu

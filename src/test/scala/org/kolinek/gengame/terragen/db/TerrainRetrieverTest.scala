@@ -11,7 +11,6 @@ import org.kolinek.gengame.db.BufferDatabaseActionExecutorProvider
 import org.kolinek.gengame.db.InMemoryDatabaseProvider
 import org.kolinek.gengame.reporting.DefaultErrorLoggingComponent
 import slick.driver.SQLiteDriver.simple._
-import org.kolinek.gengame.threading.ErrorHelpers
 import org.kolinek.gengame.db.schema.TerragenTables
 import org.kolinek.gengame.db.schema.DefaultSchemaCreatorProvider
 import org.kolinek.gengame.util.DefaultOnCloseProvider
@@ -26,7 +25,6 @@ class TerrainRetrieverTest extends FunSuite {
             with InMemoryDatabaseProvider
             with DefaultErrorLoggingComponent
             with DefaultSchemaCreatorProvider
-            with ErrorHelpers
             with TerragenTables
             with DefaultOnCloseProvider {
 
