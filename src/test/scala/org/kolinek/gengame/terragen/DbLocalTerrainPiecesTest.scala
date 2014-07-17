@@ -9,6 +9,7 @@ import org.kolinek.gengame.terragen.db.SavedTerrainPiece
 import org.kolinek.gengame.terragen.db.SavedChunk
 import scala.concurrent.duration._
 import org.kolinek.gengame.reporting.DefaultErrorLoggingComponent
+import scala.collection.mutable.ListBuffer
 
 class DbLocalTerrainPiecesTest extends FunSuite {
     class TestComp
@@ -40,16 +41,18 @@ class DbLocalTerrainPiecesTest extends FunSuite {
             case (ch, p) => ch -> Observable.items(p)
         }
 
-        def terrainChunkActions = Observable.from(actions)
+        val terrainChunkActions = Observable.from(actions).replay
     }
 
     test("DbLocalTerrainPieces works") {
         val comp = new TestComp
+        val terrainPieceActions = comp.localTerrainPieces
+        val listBuffer = new ListBuffer[SavedTerrainPieceAction]
+        terrainPieceActions.subscribe(listBuffer += _)
+        comp.terrainChunkActions.connect
 
-        val terrainPieceActions = comp.localTerrainPieces.toBlocking.toList
-
-        Thread.sleep(1000)
-        assert(terrainPieceActions === comp.actions.map {
+        Thread.sleep(10)
+        assert(listBuffer.toList === comp.actions.map {
             case TerrainChunkLoad(ch) => LoadTerrainPiece(comp.chunkPieces(ch))
             case TerrainChunkUnload(ch) => UnloadTerrainPiece(comp.chunkPieces(ch))
         })

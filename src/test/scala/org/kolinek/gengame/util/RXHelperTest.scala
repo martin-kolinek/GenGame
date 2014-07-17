@@ -27,7 +27,7 @@ class RXHelperTest extends FunSuite {
         assert(occurrences.toList === List(3 -> 2, 7 -> 6, 8 -> 6))
     }
 
-    test("joinBySingle works") {
+    test("joinNextFrom works") {
         val s1 = Subject[Int]()
         val s2 = Subject[Int]()
         val comb = s1.joinNextFrom(s2)(_ == _)
@@ -51,5 +51,24 @@ class RXHelperTest extends FunSuite {
         s2.onNext(1)
         assert(occurrences.toSet === (1 to 6).map(x => x -> x).toSet)
         assert(occurrences.count(p => p == (1, 1)) === 2)
+    }
+
+    test("joinNextFrom dispatches before finish") {
+        val s1 = Subject[Int]
+        val s2 = Subject[Int]
+
+        val comb = s1.joinNextFrom(s2)(_ == _)
+
+        var first = false
+        comb.foreach {
+            case (1, 1) => assert(!first)
+            case (2, 2) => assert(first)
+        }
+
+        s1.onNext(1)
+        s2.onNext(1)
+        first = true
+        s1.onNext(2)
+        s2.onNext(2)
     }
 }

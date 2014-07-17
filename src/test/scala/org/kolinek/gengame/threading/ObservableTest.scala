@@ -1,4 +1,4 @@
-/*package org.kolinek.gengame.threading
+package org.kolinek.gengame.threading
 
 import org.scalatest.FunSuite
 import rx.lang.scala.Subject
@@ -15,9 +15,11 @@ import rx.subscriptions.BooleanSubscription
 import java.util.concurrent.ScheduledExecutorService
 import rx.Subscription
 import rx.subscriptions.Subscriptions
+import scala.concurrent.duration._
 
 class ObservableTest extends FunSuite {
-    test("observeOn creates new observable") {
+
+    /*test("observeOn creates new observable") {
         val subj = Subject[Int]
         val obs: Observable[Int] = subj
         val obs2 = subj.map(_ + 1)
@@ -183,5 +185,5 @@ class ObservableTest extends FunSuite {
         subj2.onNext(7)
         Thread.sleep(1000)
 */
-    }
-}*/
+    }*/
+}

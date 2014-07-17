@@ -25,9 +25,9 @@ case class UnloadTerrainPiece(savedMesh: SavedTerrainPiece) extends SavedTerrain
 trait DbLocalTerrainPiecesProvider extends LocalTerrainPiecesProvider {
     self: CurrentTerrainChunks with TerrainLoaderProvider =>
     lazy val localTerrainPieces = {
-        val loadUnloads = terrainChunkActions.groupByUntil(_.chunk, { (_: Chunk, obs) =>
-            obs.collectPartFunc {
-                case TerrainChunkUnload(ch) => ch
+        val loadUnloads = terrainChunkActions.groupByUntil(_.chunk, { (ch: Chunk, _) =>
+            terrainChunkActions.collectPartFunc {
+                case TerrainChunkUnload(ch2) if ch2 == ch => ch
             }
         })
 
@@ -41,18 +41,15 @@ trait DbLocalTerrainPiecesProvider extends LocalTerrainPiecesProvider {
             ((ch, loadUnloads), retrievals) <- loadUnloads.joinNextFrom(loaded)(_._1 == _.chunk)
         } yield {
             val unload = loadUnloads.collectPartFunc {
-                case TerrainChunkUnload(ch) => {
-                    println(s"unload $ch")
-                    ch
-                }
+                case TerrainChunkUnload(ch) => ch
             }
-            unload.subscribe(x => println(s"unload $x"), x => println(s"error $x"), () => println("unload done"))
             val loads = retrievals.pieces.map(LoadTerrainPiece)
-            //loads.subscribe(x => println(s"loads $x"))
             val unloads = retrievals.pieces.map(UnloadTerrainPiece).replay
-            //unloads.subscribe(x => println(s"unloads $x"))
-            unloads.connect
-            loads /*.takeUntil(unload)*/ ++ unloads
+            unload.foreach { _ =>
+                unloads.connect
+            }
+
+            loads ++ unloads
         }
 
         actionObservables.flatten
