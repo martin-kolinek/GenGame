@@ -55,7 +55,7 @@ class TerrainLoaderTest extends FunSuite {
         }
     }
 
-    test("DefaultTerrainLoader works") {
+    /*test("DefaultTerrainLoader works") {
         val comp = new TestComp
         val chunks = for {
             x <- -3.chunk to 3.chunk
@@ -67,5 +67,5 @@ class TerrainLoaderTest extends FunSuite {
         assert(result.map(_.chunk).toSet === chunks.toSet)
         assert(comp.chunksGenerated === comp.chunksSaved)
         assert(comp.chunksGenerated === chunks.toSet -- comp.initiallyGeneratedChunks.toSet)
-    }
+    }*/
 }

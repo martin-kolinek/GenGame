@@ -3,6 +3,7 @@ package org.kolinek.gengame.db.schema
 import slick.driver.SQLiteDriver.simple._
 import org.kolinek.gengame.db.DatabaseAction
 import slick.jdbc.meta.MTable
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
 trait SchemaCreator extends DatabaseAction[Unit] {
 }
@@ -23,9 +24,10 @@ trait SchemaUpdater extends DatabaseAction[Unit] {
     def apply(s: Session) = updateTo(s)
 }
 
-object Version1SchemaVersion extends SchemaUpdater {
+object Version1SchemaVersion extends SchemaUpdater with LazyLogging {
     val version = 1
     def updateToWithoutVersion(s: Session) = {
+        logger.info("Creating schema version")
         VersionTables.schemaVersionsTable.ddl.create(s)
     }
 }

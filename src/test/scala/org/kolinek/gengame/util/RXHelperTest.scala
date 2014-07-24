@@ -71,4 +71,45 @@ class RXHelperTest extends FunSuite {
         s1.onNext(2)
         s2.onNext(2)
     }
+
+    test("mapped joinNextFrom subscribes to both observables") {
+        val s1 = Subject[Int]
+        val s2 = Subject[Int]
+
+        val comb = s1.joinNextFrom(s2)(_ == _).map {
+            case (a, b) => a
+        }
+
+        var ok = false
+
+        comb.foreach { _ =>
+            ok = true
+        }
+
+        s1.onNext(1)
+        s2.onNext(1)
+
+        assert(ok)
+    }
+
+    test("groupByUntil joinNextFrom subscribes to both observables") {
+        val s1 = Subject[Int]
+        val s2 = Subject[Int]
+
+        val groupBy1 = s1.groupByUntil(p => p, p => p, (k: Int, v: Observable[Int]) => Observable.never)
+        val comb = groupBy1.joinNextFrom(s2)(_._1 == _).map {
+            case (a, b) => a
+        }.share
+
+        var ok = false
+
+        comb.foreach { _ =>
+            ok = true
+        }
+
+        s1.onNext(1)
+        s2.onNext(1)
+
+        assert(ok)
+    }
 }

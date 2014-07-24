@@ -56,7 +56,7 @@ class DefaultTerrainRetriever(exec: DatabaseActionExecutor, savedTerrainPieceCre
     def chunkRetrievals(chunks: Observable[Chunk]) = {
         chunks.flatMap { ch =>
             exec.executeAction(new TerrainRetrieveAction(ch, savedTerrainPieceCreator))
-        }
+        }.share
     }
 }
 

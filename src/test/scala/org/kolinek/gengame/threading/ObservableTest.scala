@@ -16,8 +16,16 @@ import java.util.concurrent.ScheduledExecutorService
 import rx.Subscription
 import rx.subscriptions.Subscriptions
 import scala.concurrent.duration._
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
+@RunWith(classOf[JUnitRunner])
 class ObservableTest extends FunSuite {
+
+    test("asdf") {
+        
+        
+    }
 
     /*test("observeOn creates new observable") {
         val subj = Subject[Int]

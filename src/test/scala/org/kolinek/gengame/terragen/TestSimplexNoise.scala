@@ -2,7 +2,10 @@ package org.kolinek.gengame.terragen
 
 import org.scalatest.FunSuite
 import org.kolinek.gengame.geometry._
+import org.junit.runner.RunWith
+import org.scalatest.junit.JUnitRunner
 
+@RunWith(classOf[JUnitRunner])
 class TestSimplexNoise extends FunSuite {
     test("simplex noise zero") {
         val start = System.currentTimeMillis

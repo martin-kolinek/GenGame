@@ -16,18 +16,15 @@ trait TerrainGenerator {
 
     def generateChunks(chunks: Observable[Chunk]): Observable[GeneratedChunk] = chunks.map { chunk =>
         GeneratedChunk(chunk, generateChunk(chunk))
-    }
+    }.share
 }
 
 class DefaultTerrainGenerator(marchingCubesComputer: MarchingCubesComputer, meshProcessor: MeshProcessor) extends TerrainGenerator with LazyLogging {
     def generateChunk(chunk: Chunk) = {
         logger.debug(s"Generating chunk $chunk")
         val cubes = marchingCubesComputer.compute(chunk)
-        logger.debug(s"Generated cubes")
         val area = new TriangleArea(cubes.tris, cubes.positions)
-        logger.debug("Generated area")
         val terrainPieces = meshProcessor(area)
-        logger.debug("Generated terrain pieces")
         terrainPieces
     }
 }

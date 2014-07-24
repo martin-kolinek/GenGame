@@ -2,8 +2,9 @@ package org.kolinek.gengame.terragen
 
 import org.kolinek.gengame.game.SceneGraphProvider
 import org.kolinek.gengame.game.AssetManagerProvider
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
-trait TerrainAttacherComponent {
+trait TerrainAttacherComponent extends LazyLogging {
     self: SceneGraphProvider with LocalTerrainPiecesProvider with AssetManagerProvider =>
 
     for {
@@ -12,8 +13,14 @@ trait TerrainAttacherComponent {
         am <- assetManager
     } {
         tp match {
-            case LoadTerrainPiece(savedMesh) => savedMesh.attach(root)
-            case UnloadTerrainPiece(savedMesh) => savedMesh.detach(root)
+            case LoadTerrainPiece(savedMesh) => {
+                logger.debug("Loading terrain piece")
+                savedMesh.attach(root)
+            }
+            case UnloadTerrainPiece(savedMesh) => {
+                logger.debug("Unloading terrain piece")
+                savedMesh.detach(root)
+            }
         }
     }
 }

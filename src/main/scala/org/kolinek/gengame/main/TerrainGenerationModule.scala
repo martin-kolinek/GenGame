@@ -18,22 +18,30 @@ import org.kolinek.gengame.db.BufferDatabaseActionExecutorProvider
 import org.kolinek.gengame.terragen.LocalTerrainPiecesProvider
 import org.kolinek.gengame.util.DefaultOnCloseProvider
 import org.kolinek.gengame.db.schema.DefaultSchemaCreatorProvider
+import org.kolinek.gengame.terragen.DbLocalTerrainPiecesProvider
+import org.kolinek.gengame.terragen.db.DefaultTerrainLoaderProvider
+import org.kolinek.gengame.terragen.db.DefaultTerrainRetriverProvider
+import org.kolinek.gengame.terragen.db.DefaultTerrainPieceSaverProvider
+import com.typesafe.scalalogging.slf4j.LazyLogging
+import org.kolinek.gengame.db.SingleSessionDatabaseActionExecutorProvider
 
 trait TerrainGenerationModule
         extends TerrainAttacherComponent
-        with LocalTerrainPiecesProvider
         with InMemoryDatabaseProvider
         with DefaultOnCloseProvider
         with DefaultSchemaCreatorProvider
-        with BufferDatabaseActionExecutorProvider
+        with SingleSessionDatabaseActionExecutorProvider
         with DefaultSavedTerrainPieceCreatorProvider
         with DefaultCurrentTerrainChunks
         with DefaultVisitedChunksProvider
         with DefaultTerrainGeneratorProvider
         with DefaultMarchingCubesComputerProvider
         with DefaultMeshProcessorProvider
-        with DefaultTerragenDefinitionProvider {
+        with DefaultTerragenDefinitionProvider
+        with DbLocalTerrainPiecesProvider
+        with DefaultTerrainLoaderProvider
+        with DefaultTerrainRetriverProvider
+        with DefaultTerrainPieceSaverProvider
+        with LazyLogging {
     self: CameraPositionComponent with SceneGraphProvider with ErrorLoggingComponent with AssetManagerProvider =>
-
-    def localTerrainPieces = ???
 }

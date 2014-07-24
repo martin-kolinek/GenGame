@@ -7,7 +7,6 @@ import rx.lang.scala.subjects.ReplaySubject
 import scala.concurrent.duration._
 import org.kolinek.gengame.reporting.ErrorLoggingComponent
 import rx.schedulers.Schedulers
-import rx.lang.scala.JavaConversions._
 import org.kolinek.gengame.util.OnCloseProvider
 import com.sun.xml.internal.ws.Closeable
 import scala.concurrent.ExecutionContext
@@ -66,11 +65,18 @@ trait BufferDatabaseActionExecutorProvider extends DatabaseseActionExecutorWithS
         }
 
         subject.buffer(500.milliseconds).foreach { funcs =>
-            Future {
-                database.withTransaction { session =>
-                    funcs.foreach(_(session))
-                }
-            }(execCtx)
+            if (funcs.size > 0) {
+                Future {
+                    database.withTransaction { session =>
+                        funcs.foreach(_(session))
+                    }
+                }(execCtx).onFailure {
+                    case e: Exception => {
+                        errorLogger.logError(e)
+
+                    }
+                }(execCtx)
+            }
         }
 
         def close() {
@@ -97,6 +103,8 @@ trait SingleSessionDatabaseActionExecutorProvider extends DatabaseseActionExecut
             Future {
                 subj.onNext(act(session))
                 subj.onCompleted()
+            }(execCtx).onFailure {
+                case e: Exception => errorLogger.logError(e)
             }(execCtx)
             subj
         }

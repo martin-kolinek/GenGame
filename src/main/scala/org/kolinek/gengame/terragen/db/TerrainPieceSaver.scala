@@ -15,6 +15,7 @@ import org.kolinek.gengame.db.DatabaseActionExecutorProvider
 import org.kolinek.gengame.db.DatabaseAction
 import org.kolinek.gengame.db.DatabaseActionExecutor
 import org.kolinek.gengame.db.schema.TerragenTables
+import com.typesafe.scalalogging.slf4j.LazyLogging
 
 class TerrainPieceSaveAction(savedTerrainPieceCreator: Observable[SavedTerrainPieceCreator], piece: TerrainPiece, chunk: Chunk) extends DatabaseAction[Observable[SavedTerrainPiece]] with TerragenTables {
 
@@ -35,12 +36,13 @@ trait TerrainPieceSaver {
     def savedTerrainPieces(genChunks: Observable[GeneratedChunk]): Observable[SavedChunk]
 }
 
-class DefaultTerrainPieceSaver(databaseActionExecutor: DatabaseActionExecutor, savedTerrainPieceCreator: Observable[SavedTerrainPieceCreator]) extends TerrainPieceSaver {
+class DefaultTerrainPieceSaver(databaseActionExecutor: DatabaseActionExecutor, savedTerrainPieceCreator: Observable[SavedTerrainPieceCreator]) extends TerrainPieceSaver with LazyLogging {
     def savedTerrainPieces(genChunks: Observable[GeneratedChunk]) =
         genChunks.map { chunk =>
             val saveActions = Observable.from(chunk.pieces).map { piece =>
                 new TerrainPieceSaveAction(savedTerrainPieceCreator, piece, chunk.chunk)
             }
+            logger.debug(s"Saving terrain pieces for chunk $chunk")
             SavedChunk(chunk.chunk, saveActions.flatMap(databaseActionExecutor.executeObsAction))
         }
 }

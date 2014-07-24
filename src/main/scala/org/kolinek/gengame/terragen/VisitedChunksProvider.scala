@@ -10,6 +10,6 @@ trait VisitedChunksProvider {
 
 trait DefaultVisitedChunksProvider extends VisitedChunksProvider {
     self: CameraPositionComponent with CurrentTerrainChunks =>
-    lazy val visitedChunks = cameraPosition.map(_.bound.bound).distinctUntilChanged
+    lazy val visitedChunks = cameraPosition.map(_.bound.bound).distinctUntilChanged.share
 }
 

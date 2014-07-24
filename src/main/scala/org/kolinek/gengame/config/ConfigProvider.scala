@@ -10,7 +10,6 @@ import com.typesafe.config.ConfigValueFactory
 import scala.collection.JavaConversions._
 import rx.lang.scala.Subscription
 import rx.lang.scala.Subject
-import rx.lang.scala.JavaConversions._
 import org.kolinek.gengame.util.withLatest
 
 trait ConfigProvider {

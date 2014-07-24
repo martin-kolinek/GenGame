@@ -39,9 +39,9 @@ trait RXHelper {
 
     implicit class JoinNextOps[T, R](obs: Observable[T]) {
         def joinNextFrom(obs2: Observable[R])(equality: (T, R) => Boolean) = {
-            obs.map { t =>
-                obs2.filter(r => equality(t, r)).take(1).map(r => (t, r))
-            }.flatten
+            obs.flatMap { t =>
+                obs2.filter(r => equality(t, r)).take(1).map(r => (t, r)).share
+            }.share
         }
     }
 }

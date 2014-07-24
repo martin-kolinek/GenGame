@@ -29,29 +29,31 @@ trait DbLocalTerrainPiecesProvider extends LocalTerrainPiecesProvider {
             terrainChunkActions.collectPartFunc {
                 case TerrainChunkUnload(ch2) if ch2 == ch => ch
             }
-        })
+        }).publish
+        loadUnloads.connect
 
         val toLoad = terrainChunkActions.collectPartFunc {
             case TerrainChunkLoad(ch) => ch
         }
 
-        val loaded = terrainLoader.loadTerrain(toLoad)
+        val loaded = terrainLoader.loadTerrain(toLoad).publish
+        loaded.connect
+
+        val joined = loadUnloads.joinNextFrom(loaded)(_._1 == _.chunk).share
 
         val actionObservables = for {
-            ((ch, loadUnloads), retrievals) <- loadUnloads.joinNextFrom(loaded)(_._1 == _.chunk)
+            ((ch, loadUnloads), retrievals) <- joined
         } yield {
             val unload = loadUnloads.collectPartFunc {
                 case TerrainChunkUnload(ch) => ch
             }
-            val loads = retrievals.pieces.map(LoadTerrainPiece)
+            val loads = retrievals.pieces.map(LoadTerrainPiece).share
             val unloads = retrievals.pieces.map(UnloadTerrainPiece).replay
-            unload.foreach { _ =>
-                unloads.connect
-            }
+            unload.subscribe(_ => unloads.connect, err => throw err, () => unloads.connect)
 
             loads ++ unloads
         }
 
-        actionObservables.flatten
+        actionObservables.flatten.share
     }
 }

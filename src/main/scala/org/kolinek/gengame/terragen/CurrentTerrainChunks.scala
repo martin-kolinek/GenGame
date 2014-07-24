@@ -10,13 +10,6 @@ trait CurrentTerrainChunks {
 
 trait DefaultCurrentTerrainChunks extends CurrentTerrainChunks {
     self: VisitedChunksProvider =>
-    private lazy val chunksbuffer = visitedChunks.map { ch =>
-        for {
-            x <- -3.chunk to 3.chunk
-            y <- -3.chunk to 3.chunk
-            z <- -3.chunk to 3.chunk
-        } yield ch + Point(x, y, z)
-    }
 
     class TerrainChunkBuffer private (bufferSize: ChunkUnit, val originalChunk: Option[Chunk], val previousChunk: Option[Chunk]) {
         def this(bufferSize: ChunkUnit) = this(bufferSize, None, None)
@@ -44,7 +37,7 @@ trait DefaultCurrentTerrainChunks extends CurrentTerrainChunks {
         def nextChunk(ch: Chunk) = new TerrainChunkBuffer(bufferSize, Some(ch), originalChunk)
     }
 
-    lazy val terrainChunkActions = visitedChunks.scan(new TerrainChunkBuffer(3.chunk))(_ nextChunk _).flatMap(_.changesObservable)
+    lazy val terrainChunkActions = visitedChunks.scan(new TerrainChunkBuffer(0.chunk))(_ nextChunk _).flatMap(_.changesObservable).share
 }
 
 trait TerrainChunkAction {
