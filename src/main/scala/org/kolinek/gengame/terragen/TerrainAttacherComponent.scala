@@ -5,12 +5,11 @@ import org.kolinek.gengame.game.AssetManagerProvider
 import com.typesafe.scalalogging.slf4j.LazyLogging
 
 trait TerrainAttacherComponent extends LazyLogging {
-    self: SceneGraphProvider with LocalTerrainPiecesProvider with AssetManagerProvider =>
+    self: SceneGraphProvider with LocalTerrainPiecesProvider =>
 
     for {
         tp <- localTerrainPieces
         root <- sceneGraphRoot
-        am <- assetManager
     } {
         tp match {
             case LoadTerrainPiece(savedMesh) => {

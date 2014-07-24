@@ -16,6 +16,9 @@
 				<panel width="100%" height="10%" childLayout="center">
 					<control name="label" id="PositionLabel" text="" width="100%" height="100%" />
 				</panel>
+				<panel width="100%" height="10%" childLayout="center">
+					<control name="label" id="CurrentChunkLabel" text="" width="100%" height="100%" />
+				</panel>
 			</panel>
 		</layer>
 	</screen>

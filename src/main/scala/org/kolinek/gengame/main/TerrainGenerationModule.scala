@@ -24,6 +24,7 @@ import org.kolinek.gengame.terragen.db.DefaultTerrainRetriverProvider
 import org.kolinek.gengame.terragen.db.DefaultTerrainPieceSaverProvider
 import com.typesafe.scalalogging.slf4j.LazyLogging
 import org.kolinek.gengame.db.SingleSessionDatabaseActionExecutorProvider
+import org.kolinek.gengame.terragen.CurrentTerrainChunksVisualizer
 
 trait TerrainGenerationModule
         extends TerrainAttacherComponent
@@ -42,6 +43,7 @@ trait TerrainGenerationModule
         with DefaultTerrainLoaderProvider
         with DefaultTerrainRetriverProvider
         with DefaultTerrainPieceSaverProvider
-        with LazyLogging {
+        with LazyLogging
+        with CurrentTerrainChunksVisualizer {
     self: CameraPositionComponent with SceneGraphProvider with ErrorLoggingComponent with AssetManagerProvider =>
 }
