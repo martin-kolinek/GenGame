@@ -14,6 +14,6 @@ trait DefaultTerragenDefinitionProvider extends TerragenDefinitionProvider {
         val func = new SimplexNoise(SHA1GradientGenerator.generate("seed"))
 
         //val func: Position => Double = p => (p - Position.zero).norm.toDouble
-        TerragenDefinition(p => func((p.lower :* 0.1.pos)), 0.5)
+        TerragenDefinition(p => func((p.lower :* 0.04.pos)) - p.z.toDouble * 0.04, 0.5)
     }
 }

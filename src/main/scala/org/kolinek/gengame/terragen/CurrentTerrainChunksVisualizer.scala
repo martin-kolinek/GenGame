@@ -10,6 +10,8 @@ import spire.syntax.all._
 import org.kolinek.gengame.game.AssetManagerProvider
 import com.jme3.material.Material
 import com.jme3.math.ColorRGBA
+import com.jme3.scene.shape.Box
+import com.jme3.material.RenderState.FaceCullMode
 
 trait CurrentTerrainChunksVisualizer {
     self: CurrentTerrainChunks with SceneGraphProvider with AssetManagerProvider =>
@@ -23,12 +25,15 @@ trait CurrentTerrainChunksVisualizer {
     } {
         terrainChunkAction match {
             case TerrainChunkLoad(ch) => {
-                val geom = new Geometry(s"wirebox $ch", new WireBox(Chunk.chunkSize.upper.toFloat, Chunk.chunkSize.upper.toFloat, Chunk.chunkSize.upper.toFloat))
+                val box = new WireBox()
+                box.fromBoundingBox(ch.toBoundingBox.precise.precise.toJmeBoundingBox)
+                val geom = new Geometry(s"wirebox $ch", box)
                 val mat = new Material(assetMgr, "Common/MatDefs/Misc/Unshaded.j3md")
                 mat.getAdditionalRenderState().setWireframe(true)
+                mat.getAdditionalRenderState().setFaceCullMode(FaceCullMode.Off)
                 mat.setColor("Color", ColorRGBA.Cyan)
                 geom.setMaterial(mat)
-                geom.setLocalTranslation(ch.lower.lower.toJmeVector)
+                geom.setLocalTranslation(ch.center.toJmeVector)
                 sceneGraph.attachChild(geom)
                 loadedWireframes(ch) = geom
             }

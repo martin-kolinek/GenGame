@@ -13,11 +13,9 @@ trait TerrainAttacherComponent extends LazyLogging {
     } {
         tp match {
             case LoadTerrainPiece(savedMesh) => {
-                logger.debug("Loading terrain piece")
                 savedMesh.attach(root)
             }
             case UnloadTerrainPiece(savedMesh) => {
-                logger.debug("Unloading terrain piece")
                 savedMesh.detach(root)
             }
         }

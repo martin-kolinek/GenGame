@@ -1,7 +1,6 @@
 package org.kolinek.gengame.geometry
 
 import spire.algebra._
-import spire.math.ConvertableFrom
 import com.jme3.math.Vector3f
 import spire.syntax.all._
 
@@ -12,6 +11,8 @@ case class Point[T](x: T, y: T, z: T) {
     def zip[R](o: Point[R]) = Point(x -> o.x, y -> o.y, z -> o.z)
     def toList = List(x, y, z)
     def reduce(f: (T, T) => T) = f(f(x, y), z)
+    def toVector3f(implicit ev: IsFloatPrecise[T]) = new Vector3f(ev.toFloat(x), ev.toFloat(y), ev.toFloat(z))
+    def toBoundingBox(implicit ev1: Ring[T], ev2: Order[T]) = BoundingBox(this, this)
 }
 
 object Point {
@@ -52,10 +53,4 @@ trait PointVectorSpaceInstance extends PointModuleInstance {
 
 trait PointNormedVectorSpaceInstance extends PointVectorSpaceInstance {
     implicit def pointIsNormedVectorSpace[T: Field: NRoot]: NormedVectorSpace[Point[T], T] = pointIsInnerProductSpace[T].normed
-}
-
-trait PointImplicits {
-    implicit class PointJmeOps[T: ConvertableFrom](pt: Point[T]) {
-        def toVector3f = new Vector3f(pt.x.toFloat, pt.y.toFloat, pt.z.toFloat)
-    }
 }

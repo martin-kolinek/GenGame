@@ -13,8 +13,15 @@ trait ChunkImplicits {
 
     implicit val chunkUnitHasBounds = new HasBounds[ChunkUnit, CubeUnit] {
         def lower(c: ChunkUnit) = (c.underlying.cube * Chunk.chunkSize)
-        def upper(c: ChunkUnit) = ((c.underlying + 1).cube * Chunk.chunkSize)
-        def bound(cb: CubeUnit) = (cb.underlying / Chunk.chunkSize.underlying).chunk
+        def upper(c: ChunkUnit) = ((c.underlying + 1).cube * Chunk.chunkSize - 1)
+        def bound(cb: CubeUnit) = if (cb.underlying >= 0)
+            (cb.underlying / Chunk.chunkSize.underlying).chunk
+        else
+            (~(~cb.underlying / Chunk.chunkSize.underlying)).chunk;
+    }
+
+    implicit val chunkUnitHasCenter = new HasCenter[ChunkUnit, PositionUnit] {
+        def center(c: ChunkUnit) = (c.lower.lower.underlying + (Chunk.chunkSize.underlying / 2)).pos
     }
 
     implicit class ChunkUnitFromLong(l: Long) {

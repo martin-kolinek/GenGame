@@ -37,7 +37,7 @@ trait DefaultCurrentTerrainChunks extends CurrentTerrainChunks {
         def nextChunk(ch: Chunk) = new TerrainChunkBuffer(bufferSize, Some(ch), originalChunk)
     }
 
-    lazy val terrainChunkActions = visitedChunks.scan(new TerrainChunkBuffer(0.chunk))(_ nextChunk _).flatMap(_.changesObservable).share
+    lazy val terrainChunkActions = visitedChunks.scan(new TerrainChunkBuffer(3.chunk))(_ nextChunk _).flatMap(_.changesObservable).share
 }
 
 trait TerrainChunkAction {

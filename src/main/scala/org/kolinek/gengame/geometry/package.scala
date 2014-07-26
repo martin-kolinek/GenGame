@@ -6,9 +6,8 @@ package object geometry
         with CubeImplicits
         with IntegralRange
         with ChunkImplicits
-        with HasBoundsImplicits
-        with PointImplicits
-        with BoundingBoxImplicits {
+        with HasCenterImplicits
+        with HasBoundsImplicits {
     type Position = Point[PositionUnit]
     type SingleCube = Point[CubeUnit]
     type Chunk = Point[ChunkUnit]

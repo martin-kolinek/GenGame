@@ -10,10 +10,11 @@ class CubeUnit(val underlying: Long) extends AnyVal {
 trait CubeImplicits {
     implicit val CubeUnitIsIntegral = deriving[CubeUnit, Integral].equiv(_.underlying, (x: Long) => new CubeUnit(x))
 
-    implicit val cubeUnitHasBounds = new HasBounds[CubeUnit, PositionUnit] {
+    implicit val cubeUnitHasBounds = new HasCenter[CubeUnit, PositionUnit] with HasBounds[CubeUnit, PositionUnit] {
         def upper(c: CubeUnit) = (c.underlying + 1).pos
         def lower(c: CubeUnit) = c.underlying.pos
-        def bound(p: PositionUnit) = p.underlying.toLong.cube
+        def bound(p: PositionUnit) = p.underlying.floor.toLong.cube
+        def center(c: CubeUnit) = (c.underlying + 0.5).pos
     }
 
     implicit class CubeUnitFromLong(l: Long) {

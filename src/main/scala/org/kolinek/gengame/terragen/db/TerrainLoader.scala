@@ -28,6 +28,7 @@ class DefaultTerrainLoader(retriever: TerrainRetriever, generator: TerrainGenera
                 chunk
             }
         })
+
         val generatedSavedPieces = saver.savedTerrainPieces(generatedChunks)
 
         (piecesFromDb merge generatedSavedPieces).share

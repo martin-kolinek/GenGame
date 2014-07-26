@@ -17,7 +17,14 @@ import org.kolinek.gengame.db.DatabaseActionExecutor
 import org.kolinek.gengame.db.schema.TerragenTables
 import com.typesafe.scalalogging.slf4j.LazyLogging
 
-class TerrainPieceSaveAction(savedTerrainPieceCreator: Observable[SavedTerrainPieceCreator], piece: TerrainPiece, chunk: Chunk) extends DatabaseAction[Observable[SavedTerrainPiece]] with TerragenTables {
+class ChunkSaveAction(chunk: Chunk) extends DatabaseAction[Long] with TerragenTables {
+    def apply(session: Session) = {
+        val chunkId = (doneChunksTable returning doneChunksTable.map(_.id)).insert((chunk.x, chunk.y, chunk.z))(session)
+        chunkId
+    }
+}
+
+class TerrainPieceSaveAction(savedTerrainPieceCreator: Observable[SavedTerrainPieceCreator], piece: TerrainPiece, chunkId: Long) extends DatabaseAction[Observable[SavedTerrainPiece]] with TerragenTables {
 
     val writer = new BinaryExporter
 
@@ -26,7 +33,6 @@ class TerrainPieceSaveAction(savedTerrainPieceCreator: Observable[SavedTerrainPi
         val stream = new ByteArrayOutputStream
         writer.save(mesh, stream)
         val data = stream.toByteArray
-        val chunkId = (doneChunksTable returning doneChunksTable.map(_.id)).insert((chunk.x, chunk.y, chunk.z))(session)
         val meshId = (meshesTable returning meshesTable.map(_.id)).insert(data, chunkId)(session)
         savedTerrainPieceCreator.map(_.createTerrainPiece(data, meshId))
     }
@@ -39,11 +45,16 @@ trait TerrainPieceSaver {
 class DefaultTerrainPieceSaver(databaseActionExecutor: DatabaseActionExecutor, savedTerrainPieceCreator: Observable[SavedTerrainPieceCreator]) extends TerrainPieceSaver with LazyLogging {
     def savedTerrainPieces(genChunks: Observable[GeneratedChunk]) =
         genChunks.map { chunk =>
-            val saveActions = Observable.from(chunk.pieces).map { piece =>
-                new TerrainPieceSaveAction(savedTerrainPieceCreator, piece, chunk.chunk)
-            }
-            logger.debug(s"Saving terrain pieces for chunk $chunk")
-            SavedChunk(chunk.chunk, saveActions.flatMap(databaseActionExecutor.executeObsAction))
+            val pieces = (for {
+                chunkId <- databaseActionExecutor.executeAction(new ChunkSaveAction(chunk.chunk))
+                saveAction <- Observable.from(chunk.pieces).map { piece =>
+                    new TerrainPieceSaveAction(savedTerrainPieceCreator, piece, chunkId)
+                }
+                piece <- databaseActionExecutor.executeObsAction(saveAction)
+            } yield piece).replay
+
+            pieces.connect
+            SavedChunk(chunk.chunk, pieces)
         }
 }
 

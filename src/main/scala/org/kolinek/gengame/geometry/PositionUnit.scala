@@ -16,6 +16,9 @@ trait PositionUnitImplicits {
     implicit val positionUnitIsReal = deriving[PositionUnit, IsReal].equiv(_.underlying, (x: Double) => new PositionUnit(x))
     implicit val positionUnitIsConvertableFrom = deriving[PositionUnit, ConvertableFrom].equiv(_.underlying, (x: Double) => new PositionUnit(x))
     implicit val positionUnitIsConvertableTo = deriving[PositionUnit, ConvertableTo].equiv(_.underlying, (x: Double) => new PositionUnit(x))
+    implicit val positionUnitIsFloatPrecise = new IsFloatPrecise[PositionUnit] {
+        def toFloat(t: PositionUnit) = t.underlying.toFloat
+    }
 
     implicit class IntPosition(i: Int) {
         def pos = new PositionUnit(i)

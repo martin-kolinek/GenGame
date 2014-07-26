@@ -42,13 +42,11 @@ class TerrainGenerationModuleTest extends FunSuite with EasyMockSugar {
             with SavedTerrainPieceCreatorProvider
             with DefaultCurrentTerrainChunks
             with VisitedChunksProvider
-            //with CurrentTerrainChunks
             with DefaultTerrainGeneratorProvider
             with DefaultMarchingCubesComputerProvider
             with DefaultMeshProcessorProvider
             with DefaultTerragenDefinitionProvider
             with DbLocalTerrainPiecesProvider
-            //with TerrainLoaderProvider
             with DefaultTerrainLoaderProvider
             with DefaultTerrainRetriverProvider
             with DefaultTerrainPieceSaverProvider
@@ -72,6 +70,7 @@ class TerrainGenerationModuleTest extends FunSuite with EasyMockSugar {
         comp.visitedChunks.onCompleted()
 
         comp.localTerrainPieces.toBlocking.toList
+        
         assert(actions.size > 0)
     }
 }

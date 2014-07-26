@@ -47,8 +47,8 @@ trait DbLocalTerrainPiecesProvider extends LocalTerrainPiecesProvider {
             val unload = loadUnloads.collectPartFunc {
                 case TerrainChunkUnload(ch) => ch
             }
-            val loads = retrievals.pieces.map(LoadTerrainPiece).share
             val unloads = retrievals.pieces.map(UnloadTerrainPiece).replay
+            val loads = retrievals.pieces.map(LoadTerrainPiece).share
             unload.subscribe(_ => unloads.connect, err => throw err, () => unloads.connect)
 
             loads ++ unloads

@@ -46,7 +46,8 @@ class TerrainRetrieveAction(chunk: Chunk, savedTerrainPieceCreator: Observable[S
             } yield mesh.meshes
             val pieces = Observable.from(q.list(session).map { mesh =>
                 savedTerrainPieceCreator.map(_.createTerrainPiece(mesh.data, mesh.id))
-            }).flatten
+            }).flatten.replay
+            pieces.connect
             ChunkGenerated(SavedChunk(chunk, pieces))
         }
     }

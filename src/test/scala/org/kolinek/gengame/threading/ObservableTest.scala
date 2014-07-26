@@ -22,11 +22,6 @@ import org.scalatest.junit.JUnitRunner
 @RunWith(classOf[JUnitRunner])
 class ObservableTest extends FunSuite {
 
-    test("asdf") {
-        
-        
-    }
-
     /*test("observeOn creates new observable") {
         val subj = Subject[Int]
         val obs: Observable[Int] = subj

@@ -5,7 +5,6 @@ import spire.algebra.Order
 import spire.syntax.ring._
 import spire.syntax.order._
 import com.jme3.bounding.{ BoundingBox => JmeBBox }
-import spire.math.ConvertableFrom
 
 case class BoundingBox[T: Ring: Order](val min: Point[T], val max: Point[T]) {
     val zero = implicitly[Ring[T]].zero
@@ -16,6 +15,12 @@ case class BoundingBox[T: Ring: Order](val min: Point[T], val max: Point[T]) {
     def overlaps(other: BoundingBox[T]): Boolean = {
         List(max - other.min, other.max - min).forall(x => x.forall(_ >= zero))
     }
+
+    def toJmeBoundingBox(implicit ev1: IsFloatPrecise[T]) = new JmeBBox(min.toVector3f, max.toVector3f)
+
+    def precise[R](implicit ev1: HasBounds[Point[T], Point[R]], ev2: Ring[R], ev3: Order[R]) = BoundingBox(ev1.lower(min), ev1.upper(max))
+
+    def coarse[R](implicit ev1: HasBounds[Point[R], Point[T]], ev2: Ring[R], ev3: Order[R]) = BoundingBox(ev1.bound(min), ev1.bound(max))
 }
 
 object BoundingBox {
@@ -28,11 +33,5 @@ object BoundingBox {
         }
 
         BoundingBox(mins, maxs)
-    }
-}
-
-trait BoundingBoxImplicits {
-    implicit class BoundingBoxOps[T: ConvertableFrom](bbox: BoundingBox[T]) {
-        def toJmeBoundingBox = new JmeBBox(bbox.min.toVector3f, bbox.max.toVector3f)
     }
 }
