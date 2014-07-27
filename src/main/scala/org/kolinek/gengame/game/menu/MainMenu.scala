@@ -11,9 +11,9 @@ trait MainMenuComponent {
 
     class MainMenu extends SimpleScreenController {
 
-        val startButton = new NiftyButton("StartButton")
-        val optionsButton = new NiftyButton("OptionsButton")
-        val quitButton = new NiftyButton("QuitButton")
+        lazy val startButton = new NiftyButton("StartButton")
+        lazy val optionsButton = new NiftyButton("OptionsButton")
+        lazy val quitButton = new NiftyButton("QuitButton")
 
         def controls = List(startButton, optionsButton, quitButton)
 

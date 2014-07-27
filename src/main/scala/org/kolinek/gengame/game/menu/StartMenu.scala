@@ -21,7 +21,7 @@ trait StartMenuComponent {
             }
         }
 
-        def controls = Nil
+        def controls = Seq(startButton, backButton)
 
         def screenId = "start_game"
     }
