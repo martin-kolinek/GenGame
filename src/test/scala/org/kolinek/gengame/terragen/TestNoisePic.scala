@@ -20,9 +20,14 @@ class TestNoisePic extends FunSuite {
         info(imgName)
     }
 
-    test("Generated picture using HashGradient") {
+    test("Generated picture using HashGradient with SHA1") {
         val hashf = SHA1GradientGenerator.generate("asdbasdf")
-        genImage(hashf, "target/hash.png")
+        genImage(hashf, "target/sha1.png")
+    }
+    
+    test("Generated picture using HashGradient with XorShift") {
+        val hashf = XorShiftGradientGenerator.generate("asdbasdf")
+        genImage(hashf, "target/xorshift.png")
     }
 
 }

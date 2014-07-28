@@ -23,7 +23,7 @@ object SHA1GradientGenerator {
 
     private def extractPoint(b: Array[Byte]) = {
         val buf = ByteBuffer.wrap(b)
-        val z = buf.getLong() ^ buf.getInt().toLong
+        val z = buf.getLong()
         val p = buf.getLong()
         val phi = ((p.toDouble / Long.MaxValue.toDouble) + 1) * math.Pi
         rotToPoint(z / Long.MaxValue.toDouble, phi)
