@@ -7,11 +7,19 @@ import java.nio.ByteBuffer
 object SHA1GradientGenerator {
     def generate(seed: String): SingleCube => Position = {
         val sha = MessageDigest.getInstance("SHA-1")
-        return { case Point(x, y, z) => extractPoint(sha.digest(getArray(seed, x, y, z))) }
+        val seedDigest = sha.digest(seed.getBytes)
+        return { case Point(x, y, z) => extractPoint(sha.digest(getArray(seedDigest, x, y, z))) }
     }
 
-    private def getArray(s: String, x: CubeUnit, y: CubeUnit, z: CubeUnit) =
-        (s ++ x.toString ++ y.toString ++ z.toString).getBytes
+    private def getArray(seed: Array[Byte], x: CubeUnit, y: CubeUnit, z: CubeUnit) = {
+        val array = Array.ofDim[Byte](64)
+        val buf = ByteBuffer.allocate(64)
+        buf.put(seed)
+        buf.putLong(x.underlying)
+        buf.putLong(y.underlying)
+        buf.putLong(z.underlying)
+        buf.array
+    }
 
     private def extractPoint(b: Array[Byte]) = {
         val buf = ByteBuffer.wrap(b)
