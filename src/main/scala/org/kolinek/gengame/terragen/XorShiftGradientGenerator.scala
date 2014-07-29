@@ -4,14 +4,22 @@ import org.kolinek.gengame.geometry._
 import java.security.MessageDigest
 import java.nio.ByteBuffer
 import scala.annotation.tailrec
+import scala.util.hashing.MurmurHash3
 
 object XorShiftGradientGenerator {
     def generate(seed: String): SingleCube => Position = {
         val sha = MessageDigest.getInstance("SHA-1")
         val seedDigest = sha.digest(seed.getBytes)
-        val buf = ByteBuffer.wrap(seedDigest)
-        val seedLong = buf.getLong()
-        return { case Point(x, y, z) => extractPoint(seedLong, x.underlying, y.underlying, z.underlying) }
+        return { case Point(x, y, z) => extractPoint(MurmurHash3.bytesHash(getArray(seedDigest, x, y, z))) }
+    }
+
+    private def getArray(seed: Array[Byte], x: CubeUnit, y: CubeUnit, z: CubeUnit) = {
+        val buf = ByteBuffer.allocate(24)
+        //buf.put(seed)
+        buf.putLong(x.underlying)
+        buf.putLong(y.underlying)
+        buf.putLong(z.underlying)
+        buf.array
     }
 
     def next(x1: Long) = {
@@ -20,27 +28,11 @@ object XorShiftGradientGenerator {
         x2 ^ (x2 << 4);
     }
 
-    @tailrec
-    def nextIt(it: Int, x: Long): Long = {
-        if (it == 0)
-            x
-        else
-            nextIt(it - 1, next(x))
-    }
-
-    private def extractPoint(stringSeed: Long, px: Long, py: Long, pz: Long) = {
-        //println(s"point $px $py $pz")
-        val seed = stringSeed ^ nextIt(6, px) ^ nextIt(8, py) ^ nextIt(13, pz)
+    private def extractPoint(seed: Int) = {
         val z = next(seed)
         val p = next(z)
-        //println(s"seed $seed")
-        //println(s"z $z")
-        //println(s"p $p")
-        val phi = ((p.toDouble / Long.MaxValue.toDouble) + 1) * math.Pi
-        //println(s"phi $phi")
-        val zz = z / Long.MaxValue.toDouble
-        //println(s"zz $zz")
-        rotToPoint(zz, phi)
+        val phi = ((p.toDouble / Int.MaxValue.toDouble) + 1) * math.Pi
+        rotToPoint(z / Int.MaxValue.toDouble, phi)
     }
 
     private def rotToPoint(z: Double, phi: Double) = Point(getX(z, phi).pos, getY(z, phi).pos, z.pos)

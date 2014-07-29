@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import spire.implicits._
 import org.kolinek.gengame.geometry._
+import org.kolinek.gengame.util.Timing
 
 class TestNoisePic extends FunSuite {
     def genImage(func: SingleCube => Position, imgName: String) {
@@ -21,13 +22,17 @@ class TestNoisePic extends FunSuite {
     }
 
     test("Generated picture using HashGradient with SHA1") {
-        val hashf = SHA1GradientGenerator.generate("asdbasdf")
-        genImage(hashf, "target/sha1.png")
+        info(Timing.timed {
+            val hashf = SHA1GradientGenerator.generate("asdbasdf")
+            genImage(hashf, "target/sha1.png")
+        }.toString)
     }
-    
+
     test("Generated picture using HashGradient with XorShift") {
-        val hashf = XorShiftGradientGenerator.generate("asdbasdf")
-        genImage(hashf, "target/xorshift.png")
+        info(Timing.timed {
+            val hashf = XorShiftGradientGenerator.generate("asdbasdf")
+            genImage(hashf, "target/xorshift.png")
+        }.toString)
     }
 
 }
