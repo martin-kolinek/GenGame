@@ -24,6 +24,7 @@ class TerrainGeneratorTest extends FunSuite {
     } yield Chunk(x.chunk, y.chunk, z.chunk)
 
     test("TerrainGenerator works") {
+        Thread.sleep(10000)
         val comp = new TestComp
         info(Timing.timed {
             val savedChunks = comp.terrainGenerator.generateChunks(Observable.from(chunks)).toBlocking.toList

@@ -4,6 +4,7 @@ import org.scalatest.FunSuite
 import java.awt.image.BufferedImage
 import javax.imageio.ImageIO
 import spire.implicits._
+import org.kolinek.gengame.util._
 import org.kolinek.gengame.geometry._
 import org.kolinek.gengame.util.Timing
 
@@ -35,4 +36,17 @@ class TestNoisePic extends FunSuite {
         }.toString)
     }
 
+    test("Generated picture using HashGradient with SHA1 memoized") {
+        info(Timing.timed {
+            val hashf = SHA1GradientGenerator.generate("asdbasdf").memoize(64)
+            genImage(hashf, "target/sha1_mem.png")
+        }.toString)
+    }
+
+    test("Generated picture using HashGradient with XorShift memoized") {
+        info(Timing.timed {
+            val hashf = XorShiftGradientGenerator.generate("asdbasdf").memoize(64)
+            genImage(hashf, "target/xorshift_mem.png")
+        }.toString)
+    }
 }

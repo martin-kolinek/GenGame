@@ -5,6 +5,7 @@ package object util
         with Parsing
         with ApplicativeSequence
         with OptionApplicative
-        with OptionHelpers {
+        with OptionHelpers
+        with Memoization {
 
 }
