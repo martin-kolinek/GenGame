@@ -10,16 +10,20 @@ object XorShiftGradientGenerator {
     def generate(seed: String): SingleCube => Position = {
         val sha = MessageDigest.getInstance("SHA-1")
         val seedDigest = sha.digest(seed.getBytes)
-        return { case Point(x, y, z) => extractPoint(MurmurHash3.bytesHash(getArray(seedDigest, x, y, z))) }
+        val seedLong = ByteBuffer.wrap(seedDigest).getLong
+        return { case Point(x, y, z) => extractPoint(getSeed(seedLong, x, y, z)) }
     }
 
-    private def getArray(seed: Array[Byte], x: CubeUnit, y: CubeUnit, z: CubeUnit) = {
-        val buf = ByteBuffer.allocate(24)
-        //buf.put(seed)
+    private def getSeed(seed: Long, x: CubeUnit, y: CubeUnit, z: CubeUnit) = {
+        val buf = ByteBuffer.allocate(32)
+        buf.putLong(seed)
         buf.putLong(x.underlying)
         buf.putLong(y.underlying)
         buf.putLong(z.underlying)
-        buf.array
+
+        val hash = MurmurHash3.bytesHash(buf.array).toLong 
+        hash << 32 |
+            hash
     }
 
     def next(x1: Long) = {
@@ -28,9 +32,9 @@ object XorShiftGradientGenerator {
         x2 ^ (x2 << 4);
     }
 
-    private def extractPoint(seed: Int) = {
-        val z = next(seed)
-        val p = next(z)
+    private def extractPoint(seed: Long) = {
+        val z = next(seed).toInt
+        val p = next(z).toInt
         val phi = ((p.toDouble / Int.MaxValue.toDouble) + 1) * math.Pi
         rotToPoint(z / Int.MaxValue.toDouble, phi)
     }
