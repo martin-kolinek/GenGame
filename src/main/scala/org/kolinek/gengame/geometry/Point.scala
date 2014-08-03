@@ -4,8 +4,8 @@ import spire.algebra._
 import com.jme3.math.Vector3f
 import spire.syntax.all._
 
-case class Point[T](x: T, y: T, z: T) {
-    def map[R](f: T => R) = Point(f(x), f(y), f(z))
+case class Point[@specialized T](x: T, y: T, z: T) {
+    def map[R](f: T => R):Point[R] = Point(f(x), f(y), f(z))
     def foldLeft[R](r: R)(f: (R, T) => R) = f(f(f(r, x), y), z)
     def forall(f: T => Boolean) = foldLeft(true)(_ && f(_))
     def zip[R](o: Point[R]) = Point(x -> o.x, y -> o.y, z -> o.z)

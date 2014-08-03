@@ -7,7 +7,7 @@ import org.kolinek.gengame.terragen.TerragenDefinitionProvider
 
 class MarchingCubesComputer(defin: TerragenDefinition) {
     private val marchCubes = MarchCubeCases.getAllMarchingCubeCases
-
+    
     def compute(chunk: Chunk) = {
         val points = new PointGrid(Cube.unit :* (Chunk.chunkSize + 1.cube), makeNormalizedFunc(chunk.lower, defin.func))
         val edges = new EdgeGrid(points, defin.treshold)

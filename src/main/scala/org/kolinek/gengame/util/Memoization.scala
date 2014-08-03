@@ -15,10 +15,13 @@ trait Memoization {
             val map = new HashMap[T, R]
             val q = new Queue[T]
             def apply(t: T) = {
-                if (map.contains(t))
-                    map(t)
-                else
-                    memoized(t, func(t))
+                map.get(t) match {
+                    case Some(v) => v
+                    case None => {
+                        memoized(t, func(t))
+                    }
+                }
+
             }
 
             private def memoized(t: T, r: R) = {

@@ -36,7 +36,7 @@ object Chunk extends ((ChunkUnit, ChunkUnit, ChunkUnit) => Point[ChunkUnit]) {
 
     def unit = apply(1.chunk, 1.chunk, 1.chunk)
 
-    val chunkSize: CubeUnit = 16.cube
+    val chunkSize: CubeUnit = 32.cube
 
     def offsets = {
         for {
